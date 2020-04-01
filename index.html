@@ -2073,7 +2073,7 @@
             )
 
             d3.csv(
-                '/Data/' + teamCode + '/' + FolderPath + "/DataGranular/x" + x + "_y" + y + ".csv", 
+                './Data/' + teamCode + '/' + FolderPath + "/DataGranular/x" + x + "_y" + y + ".csv", 
                 function(dataGranular) {
                     
                     updateBallMovementHeatmap(
@@ -2519,15 +2519,15 @@
             )
 
 
-        d3.csv('/Data/' + teamCode + '/For/Team/OriginProbabilities.csv', function(dataOriginProbabilitiesFor) {
+        d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilities.csv', function(dataOriginProbabilitiesFor) {
 
-            d3.csv('/Data/' + teamCode + '/For/Team/OriginProbabilitiesPass.csv', function(dataOriginProbabilitiesPassFor) {
+            d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilitiesPass.csv', function(dataOriginProbabilitiesPassFor) {
 
-                d3.csv('/Data/' + teamCode + '/For/Team/OriginProbabilitiesMove.csv', function(dataOriginProbabilitiesMoveFor) {
+                d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilitiesMove.csv', function(dataOriginProbabilitiesMoveFor) {
 
-                    d3.csv('/Data/' + teamCode + '/For/Team/OriginProbabilitiesShot.csv', function(dataOriginProbabilitiesShotFor) {
+                    d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilitiesShot.csv', function(dataOriginProbabilitiesShotFor) {
                     
-                        d3.csv('/Data/' + teamCode + '/For/Team/DataGranularScale.csv', function(dataGranularScale) {
+                        d3.csv('./Data/' + teamCode + '/For/Team/DataGranularScale.csv', function(dataGranularScale) {
 
 
                             var FolderPath = "For/Team/"
