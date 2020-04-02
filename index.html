@@ -335,8 +335,9 @@
         
         <li>
             xPo only gives credit when a shot happened at the end of the play
-            whereas xT also gives credit for situations where the team did not
-            shoot.
+            whereas xT also gives credit even for situations where they got into
+            a possible shooting position even if they didn't actually shoot.
+            This is something I'm going to try and incorporate in v2.
         </li>
     </ul>
 
@@ -410,7 +411,8 @@
             'Manchester City',
             'Chelsea',
             'Manchester United',
-            'Sheffield United'
+            'Sheffield United',
+            'Wolves'
         ]
 
         allTeamCodes = [
@@ -418,7 +420,8 @@
             'ManCity',
             'Chelsea',
             'ManUtd',
-            'SheffieldUtd'
+            'SheffieldUtd',
+            'Wolves'
         ]
 
         // teamCode = 'ManCity'
@@ -2484,6 +2487,13 @@
                 you have clicked, and disable the change on hover.\
                 Double clicking anywhere on the pitch will unfreeze\
                 the start area and enable the response to hover again.\
+                "
+            )
+
+
+            d3.select("#" + cContentPanelId).append("p").text(
+                "You can go on full screen for easier viewing. F11 is the\
+                shortcut to go full screen on most browsers.\
                 "
             )
 
