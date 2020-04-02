@@ -269,6 +269,11 @@
     </p>
 
     <p>
+        The colour scales don't change when you change teams though so you can
+        compare teams on the basis of how hot or cool their visuals look like.
+    </p>
+
+    <p>
         The eventual numbers aren't distributed in a manner conducive to visualising
         easily which is why the colours had to get stretched a little thin. I'd 
         suggest you look at these charts with a high brightness setting.
@@ -2536,457 +2541,467 @@
                 d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilitiesMove.csv', function(dataOriginProbabilitiesMoveFor) {
 
                     d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilitiesShot.csv', function(dataOriginProbabilitiesShotFor) {
-                    
-                        d3.csv('./Data/' + teamCode + '/For/Team/DataGranularScale.csv', function(dataGranularScale) {
+                        
+                        d3.csv('./Data/TeamOriginScale.csv', function(dataOriginScale) {
+
+                            d3.csv('./Data/TeamGranularScale.csv', function(dataGranularScale) {
 
 
-                            var FolderPath = "For/Team/"
+                                var FolderPath = "For/Team/"
 
 
-                            // local functions
-                            if ( true ) {
+                                // local functions
+                                if ( true ) {
 
-                                var colorScales = {}
+                                    var colorScales = {}
 
-                                // Build color scale
-                                colorScales["myGranularNonShotProbabilityColor"] = d3.scaleLinear()
-                                    .range(
-                                        [
-                                            "#000000", 
-                                            "#a65628"
-                                        ]
-                                    )
-                                    .domain(
-                                        [
-                                            0,
-                                            dataGranularScale[0]['GoalProbability']
-                                        ]
-                                    )
-
-                                // Build color scale
-                                colorScales["myGranularNonShotGoalsColor"] = d3.scaleLinear()
-                                    .range(
-                                        [
-                                            "#000000", 
-                                            // "#f781bf"
-                                            "#ffffff"
-                                        ]
-                                    )
-                                    .domain(
-                                        [
-                                            0,
-                                            dataGranularScale[0]['WeightedProbabiliticGoals']
-                                        ]
-                                    )
-
-                                nMaxShotProbability = d3.max(
-                                    [
-                                        // d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.GoalProbability } ),
-                                        // d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.GoalProbability } ),
-                                        d3.max(dataOriginProbabilitiesShotFor, function (d) { return d.GoalProbability } )
-                                        // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.GoalProbability } ),
-                                        // d3.max(dataOriginProbabilitiesShotAgainst, function (d) { return d.GoalProbability } ),
-                                        // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.GoalProbability } )
-                                    ]
-                                )
-                            
-                                // Build color scale
-                                colorScales["myShotProbabilityColor"] = d3.scaleLinear()
-                                    .range(
-                                        [
-                                            "#000000", 
-                                            // "#00003F",
-                                            // "#00007F",
-                                            "#e41a1c"
-                                        ]
-                                    )
-                                    .domain(
-                                        [
-                                            0,
-                                            // nMaxShotProbability / 64,
-                                            // nMaxShotProbability / 16,
-                                            // nMaxShotProbability / 4,
-                                            nMaxShotProbability
-                                        ]
-                                    )
-                                    // .range(["#000000", "#FF0000"])
-                                    // .domain([0,1])
-
-                                // Build color scale
-                                var nMaxShotGoals = d3.max(
-                                    [
-                                        // d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.WeightedProbabiliticGoals } ),
-                                        // d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.WeightedProbabiliticGoals } ),
-                                        d3.max(dataOriginProbabilitiesShotFor, function (d) { return d.WeightedProbabiliticGoals } )
-                                        // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
-                                        // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
-                                        // d3.max(dataOriginProbabilitiesShotAgainst, function (d) { return d.WeightedProbabiliticGoals } )
-                                    ]
-                                )
-
-                                // Build color scale
-                                colorScales['myShotGoalsColor'] = d3.scaleLinear()
-                                    .range(
-                                        [
-                                            "#000000", 
-                                            // "#00003F",
-                                            // "#00007F",
-                                            "#4daf4a"
-                                        ]
-                                    )
-                                    .domain(
-                                        [
-                                            0,
-                                            // nMaxNonShotProbability / 64,
-                                            // nMaxNonShotProbability / 16,
-                                            // nMaxNonShotProbability / 4,
-                                            nMaxShotGoals
-                                        ]
-                                    )
-                                    // .range(["#000000", "#FF0000"])
-                                    // .domain([0,1])
-
-                                // Build color scale
-                                var nMaxNonShotProbability = d3.max(
-                                    [
-                                        d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.GoalProbability } ),
-                                        d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.GoalProbability } )
-                                        // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
-                                        // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.WeightedProbabiliticGoals } )
-                                    ]
-                                )
-
-                                colorScales['myNonShotProbabilityColor'] = d3.scaleLinear()
-                                    .range(
-                                        [
-                                            "#000000", 
-                                            // "#3F0000",
-                                            // "#7F0000",
-                                            "#377eb8"
-                                        ]
-                                    )
-                                    .domain(
-                                        [
-                                            0,
-                                            // nMaxNonShotGoals / 64,
-                                            // nMaxNonShotGoals / 16,
-                                            // nMaxNonShotGoals / 4,
-                                            nMaxNonShotProbability
-                                        ]
-                                    )
-
-                                // Build color scale
-                                var nMaxNonShotGoals = d3.max(
-                                    [
-                                        d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.WeightedProbabiliticGoals } ),
-                                        d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.WeightedProbabiliticGoals } )
-                                        // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
-                                        // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.WeightedProbabiliticGoals } )
-                                    ]
-                                )
-
-                                colorScales['myNonShotGoalsColor'] = d3.scaleLinear()
-                                    .range(
-                                        [
-                                            "#000000", 
-                                            // "#3F0000",
-                                            // "#7F0000",
-                                            "#ff7f00"
-                                        ]
-                                    )
-                                    .domain(
-                                        [
-                                            0,
-                                            // nMaxNonShotGoals / 64,
-                                            // nMaxNonShotGoals / 16,
-                                            // nMaxNonShotGoals / 4,
-                                            nMaxNonShotGoals
-                                        ]
-                                    )
-
-                                // Build color scale
-                                colorScales['myProbabilityColor'] = d3.scaleLinear()
-                                    .range(
-                                        [
-                                            "#000000", 
-                                            "#ffff33"
-                                        ]
-                                    )
-                                    .domain(
-                                        [
-                                            0,
-                                            d3.max(
-                                                [
-                                                    d3.max(dataOriginProbabilitiesFor, function (d) { return d.GoalProbability } )
-                                                    // d3.max(dataOriginProbabilitiesAgainst, function (d) { return d.GoalProbability } )
-                                                ]
-                                            )
-                                        ]
-                                    )
-                                    // .range(["#000000", "#FF0000"])
-                                    // .domain([0,1])
-
-                                // Build color scale
-                                colorScales['myGoalsColor'] = d3.scaleLinear()
-                                    .range(
-                                        [
-                                            "#000000", 
-                                            "#984ea3"
-                                        ]
-                                    )
-                                    .domain(
-                                        [
-                                            0,
-                                            d3.max(
-                                                [
-                                                    d3.max(dataOriginProbabilitiesFor, function (d) { return d.WeightedProbabiliticGoals } )
-                                                    // d3.max(dataOriginProbabilitiesAgainst, function (d) { return d.WeightedProbabiliticGoals } )
-                                                ]
-                                            )
-                                        ]
-                                    )
-                                    // .range(["#000000", "#FF0000"])
-                                    // .domain([0,1])
-
-
-                                // Handler for dropdownScenario value change
-                                var dropdownScenarioChange = function(
-                                    d,
-                                    cContentPanelId,
-                                    dropdownScenarioOptions
-                                ) {
-
-                                    if ( d == dropdownScenarioOptions[0] ) {
-
-                                        d3
-                                            .select("#" + cContentPanelId)
-                                            .select('#ScenarioText')
-                                            .text(null)
-
-                                    }
-
-                                    if ( d == dropdownScenarioOptions[1] ) {
-
-
-                                        updatePanel3ForInterations(
-                                            teamCode,
-                                            FolderPath,
-                                            88,
-                                            36,
-                                            d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementOriginCumulativePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementShotPanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementShotCumulativePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementPassPanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementPassCumulativePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementMovePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementMoveCumulativePanel3'),
-                                            colorScales,
-                                            cContentPanelId
+                                    // Build color scale
+                                    colorScales["myGranularNonShotProbabilityColor"] = d3.scaleLinear()
+                                        .range(
+                                            [
+                                                "#000000", 
+                                                "#a65628"
+                                            ]
+                                        )
+                                        .domain(
+                                            [
+                                                0,
+                                                dataGranularScale[0]['GoalProbability']
+                                            ]
                                         )
 
-                                        d3
-                                            .select("#" + cContentPanelId)
-                                            .select('#ScenarioText')
-                                            .text(
-                                                "\
-                                                The xG contributed from passing plot is hotter than\
-                                                xG contributed from running. This means that when Liverpool\
-                                                have the ball around the pointer, passing has eventually led to\
-                                                a larger overall xG than running. Quite a bit of xG has come\
-                                                from short sideward or diagonally forward passes. However, in terms of xG\
-                                                per play there are spots towards the left of the box, spots on the left wing,\
-                                                the left of midfield, and the right wing which are attractive options.\
-                                                Passes to these spots have not yielded too much xG overall but that is\
-                                                probably because not too many passes were aimed there. Whenever\
-                                                a pass was indeed made to these areas, a relatively high xG shot usually\
-                                                followed. Similarly, despite not generating an overall high amount of Xg,\
-                                                Liverpool do generate a relatively high xG shot often when they run towards\
-                                                the box or towards the left of the box.\
-                                                "
-                                            )
-
-
-                                    }
-
-
-                                    if ( d == dropdownScenarioOptions[2] ) {
-
-
-                                        updatePanel3ForInterations(
-                                            teamCode,
-                                            FolderPath,
-                                            36,
-                                            52,
-                                            d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementOriginCumulativePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementShotPanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementShotCumulativePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementPassPanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementPassCumulativePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementMovePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementMoveCumulativePanel3'),
-                                            colorScales,
-                                            cContentPanelId
+                                    // Build color scale
+                                    colorScales["myGranularNonShotGoalsColor"] = d3.scaleLinear()
+                                        .range(
+                                            [
+                                                "#000000", 
+                                                // "#f781bf"
+                                                "#ffffff"
+                                            ]
+                                        )
+                                        .domain(
+                                            [
+                                                0,
+                                                dataGranularScale[0]['WeightedProbabiliticGoals']
+                                            ]
                                         )
 
-
-                                        d3
-                                            .select("#" + cContentPanelId)
-                                            .select('#ScenarioText')
-                                            .text(
-                                                "\
-                                                Neither of the total xPo generated plots look\
-                                                very hot for either runs or passes, except for a short\
-                                                pass towards the left wing. This means that\
-                                                having the ball around the pointers hasn't eventually\
-                                                results in a lot of overall xG for Liverpool. However, when\
-                                                the player manages to either run into the midfield area\
-                                                or get long balls either far up the left wing, near the\
-                                                right side of the box, or in the box, then there is a\
-                                                relatively high xG shot is usually generated.\
-                                                "
-                                            )
-
-                                    }
-
-                                    if ( d == dropdownScenarioOptions[3] ) {
-
-                                        updatePanel3ForInterations(
-                                            teamCode,
-                                            FolderPath,
-                                            88,
-                                            8,
-                                            d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementOriginCumulativePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementShotPanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementShotCumulativePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementPassPanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementPassCumulativePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementMovePanel3'),
-                                            d3.select('#' + cContentPanelId).select('#pitchElementMoveCumulativePanel3'),
-                                            colorScales,
-                                            cContentPanelId
-                                        )
-
-                                        d3
-                                            .select("#" + cContentPanelId)
-                                            .select('#ScenarioText')
-                                            .text(
-                                                "\
-                                                There are hot patches on xPo and\
-                                                total xPo generated. This means that Liverpool tend\
-                                                to eventually score often and with high probability when\
-                                                the ball is in the area around the marker. Running towards\
-                                                the goal and towards the corner, and passing into\
-                                                midfield and on the opposite wing are actions that\
-                                                eventually end in goals with quite high probability.\
-                                                However, in the case of running with the ball, most of\
-                                                their goals have come from runs towards the box too, but\
-                                                the passes that have led to more goals have been either\
-                                                around the edge of the last third of the pitch, or passes\
-                                                into the box, which are probably crosses.\
-                                                "
-                                            )
-
-
-                                    }
-
-                                };
-
-
-
-                            }
-
-
-                            d3.select('#' + cContentPanelId + "Panel0").selectAll('*').remove()
-                            d3.select('#' + cContentPanelId + "Panel4").selectAll('*').remove()
-                            d3.select('#' + cContentPanelId + "Panel1").selectAll('*').remove()
-                            d3.select('#' + cContentPanelId + "Panel5").selectAll('*').remove()
-                            d3.select('#' + cContentPanelId + "Panel3").selectAll('*').remove()
-
-                            fCreatePanel0(
-                                cContentPanelId + "Panel0",
-                                dataOriginProbabilitiesShotFor,
-                                colorScales
-                            )
-
-                            fCreatePanel4(
-                                cContentPanelId + "Panel4",
-                                dataOriginProbabilitiesPassFor,
-                                colorScales
-                            )
-
-
-                            fCreatePanel5(
-                                cContentPanelId + "Panel5",
-                                dataOriginProbabilitiesMoveFor,
-                                colorScales
-                            )
-
-
-                            fCreatePanel1(
-                                cContentPanelId + "Panel1",
-                                dataOriginProbabilitiesFor,
-                                colorScales
-                            )
-
-                            var cContentPanel3Id = cContentPanelId + "Panel3"
-
-                            if ( teamCode == 'Liverpool' ) { 
+                                    nMaxShotProbability = d3.max(
+                                        [
+                                            // d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.GoalProbability } ),
+                                            // d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.GoalProbability } ),
+                                            d3.max(dataOriginProbabilitiesShotFor, function (d) { return d.GoalProbability } )
+                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.GoalProbability } ),
+                                            // d3.max(dataOriginProbabilitiesShotAgainst, function (d) { return d.GoalProbability } ),
+                                            // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.GoalProbability } )
+                                        ]
+                                    )
                                 
-                                d3.select("#" + cContentPanel3Id).append("p").text(
-                                    "You can pick a scenario from the dropdown below\
-                                    to get started with some examples.\
-                                    "
-                                )
+                                    // Build color scale
+                                    colorScales["myShotProbabilityColor"] = d3.scaleLinear()
+                                        .range(
+                                            [
+                                                "#000000", 
+                                                // "#00003F",
+                                                // "#00007F",
+                                                "#e41a1c"
+                                            ]
+                                        )
+                                        .domain(
+                                            [
+                                                0,
+                                                // nMaxShotProbability / 64,
+                                                // nMaxShotProbability / 16,
+                                                // nMaxShotProbability / 4,
+                                                // nMaxShotProbability
+                                                dataOriginScale[0]['Shot_GoalProbability']
+                                            ]
+                                        )
+                                        // .range(["#000000", "#FF0000"])
+                                        // .domain([0,1])
 
-                                var dropdownScenario = d3.select("#" + cContentPanel3Id)
-                                    .append("select")
-                                    .attr("id","ScenarioSelection")
+                                    // Build color scale
+                                    var nMaxShotGoals = d3.max(
+                                        [
+                                            // d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.WeightedProbabiliticGoals } ),
+                                            // d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.WeightedProbabiliticGoals } ),
+                                            d3.max(dataOriginProbabilitiesShotFor, function (d) { return d.WeightedProbabiliticGoals } )
+                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
+                                            // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
+                                            // d3.max(dataOriginProbabilitiesShotAgainst, function (d) { return d.WeightedProbabiliticGoals } )
+                                        ]
+                                    )
 
-                                dropdownScenarioOptions = [
-                                    '--No Scenario--',
-                                    'Scenario 1: In the hole',
-                                    'Scenario 2: Deep down the pitch on the left',
-                                    'Scenario 3: Wide on the right wing'
-                                ]
+                                    // Build color scale
+                                    colorScales['myShotGoalsColor'] = d3.scaleLinear()
+                                        .range(
+                                            [
+                                                "#000000", 
+                                                // "#00003F",
+                                                // "#00007F",
+                                                "#4daf4a"
+                                            ]
+                                        )
+                                        .domain(
+                                            [
+                                                0,
+                                                // nMaxNonShotProbability / 64,
+                                                // nMaxNonShotProbability / 16,
+                                                // nMaxNonShotProbability / 4,
+                                                // nMaxShotGoals
+                                                dataOriginScale[0]['Shot_WeightedProbabiliticGoals']
+                                            ]
+                                        )
+                                        // .range(["#000000", "#FF0000"])
+                                        // .domain([0,1])
 
-                                dropdownScenario.selectAll("option")
-                                    .data(dropdownScenarioOptions)
-                                    .enter().append("option")
-                                    .attr("value", function (d) { return d; })
-                                    .text(function (d) { return d; })
+                                    // Build color scale
+                                    var nMaxNonShotProbability = d3.max(
+                                        [
+                                            d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.GoalProbability } ),
+                                            d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.GoalProbability } )
+                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
+                                            // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.WeightedProbabiliticGoals } )
+                                        ]
+                                    )
 
-                                dropdownScenario
-                                    .on("change", function(d) { 
-
-                                        dropdownScenarioChange(
-                                            d3.select(this).property("value"),
-                                            cContentPanel3Id,
-                                            dropdownScenarioOptions
+                                    colorScales['myNonShotProbabilityColor'] = d3.scaleLinear()
+                                        .range(
+                                            [
+                                                "#000000", 
+                                                // "#3F0000",
+                                                // "#7F0000",
+                                                "#377eb8"
+                                            ]
+                                        )
+                                        .domain(
+                                            [
+                                                0,
+                                                // nMaxNonShotGoals / 64,
+                                                // nMaxNonShotGoals / 16,
+                                                // nMaxNonShotGoals / 4,
+                                                // nMaxNonShotProbability
+                                                dataOriginScale[0]['NonShot_GoalProbability']
+                                            ]
                                         )
 
-                                    });
+                                    // Build color scale
+                                    var nMaxNonShotGoals = d3.max(
+                                        [
+                                            d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.WeightedProbabiliticGoals } ),
+                                            d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.WeightedProbabiliticGoals } )
+                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
+                                            // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.WeightedProbabiliticGoals } )
+                                        ]
+                                    )
+
+                                    colorScales['myNonShotGoalsColor'] = d3.scaleLinear()
+                                        .range(
+                                            [
+                                                "#000000", 
+                                                // "#3F0000",
+                                                // "#7F0000",
+                                                "#ff7f00"
+                                            ]
+                                        )
+                                        .domain(
+                                            [
+                                                0,
+                                                // nMaxNonShotGoals / 64,
+                                                // nMaxNonShotGoals / 16,
+                                                // nMaxNonShotGoals / 4,
+                                                // nMaxNonShotGoals
+                                                dataOriginScale[0]['NonShot_WeightedProbabiliticGoals']
+                                            ]
+                                        )
+
+                                    // Build color scale
+                                    colorScales['myProbabilityColor'] = d3.scaleLinear()
+                                        .range(
+                                            [
+                                                "#000000", 
+                                                "#ffff33"
+                                            ]
+                                        )
+                                        .domain(
+                                            [
+                                                0,
+                                                // d3.max(
+                                                //     [
+                                                //         d3.max(dataOriginProbabilitiesFor, function (d) { return d.GoalProbability } )
+                                                //         // d3.max(dataOriginProbabilitiesAgainst, function (d) { return d.GoalProbability } )
+                                                //     ]
+                                                // )
+                                                dataOriginScale[0]['_GoalProbability']
+                                            ]
+                                        )
+                                        // .range(["#000000", "#FF0000"])
+                                        // .domain([0,1])
+
+                                    // Build color scale
+                                    colorScales['myGoalsColor'] = d3.scaleLinear()
+                                        .range(
+                                            [
+                                                "#000000", 
+                                                "#984ea3"
+                                            ]
+                                        )
+                                        .domain(
+                                            [
+                                                0,
+                                                // d3.max(
+                                                //     [
+                                                //         d3.max(dataOriginProbabilitiesFor, function (d) { return d.WeightedProbabiliticGoals } )
+                                                //         // d3.max(dataOriginProbabilitiesAgainst, function (d) { return d.WeightedProbabiliticGoals } )
+                                                //     ]
+                                                // )
+                                                dataOriginScale[0]['_WeightedProbabiliticGoals']
+                                            ]
+                                        )
+                                        // .range(["#000000", "#FF0000"])
+                                        // .domain([0,1])
 
 
-                                d3.select("#" + cContentPanel3Id).append("p")
-                                    .attr('id','ScenarioText')
+                                    // Handler for dropdownScenario value change
+                                    var dropdownScenarioChange = function(
+                                        d,
+                                        cContentPanelId,
+                                        dropdownScenarioOptions
+                                    ) {
+
+                                        if ( d == dropdownScenarioOptions[0] ) {
+
+                                            d3
+                                                .select("#" + cContentPanelId)
+                                                .select('#ScenarioText')
+                                                .text(null)
+
+                                        }
+
+                                        if ( d == dropdownScenarioOptions[1] ) {
 
 
-                            }
+                                            updatePanel3ForInterations(
+                                                teamCode,
+                                                FolderPath,
+                                                88,
+                                                36,
+                                                d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementOriginCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementShotPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementShotCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementPassPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementPassCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementMovePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementMoveCumulativePanel3'),
+                                                colorScales,
+                                                cContentPanelId
+                                            )
 
-                            fCreatePanel3(
-                                cContentPanel3Id,
-                                dataOriginProbabilitiesFor,
-                                dataOriginProbabilitiesShotFor,
-                                dataOriginProbabilitiesPassFor,
-                                dataOriginProbabilitiesMoveFor,
-                                colorScales,
-                                teamCode,
-                                FolderPath
-                            )
+                                            d3
+                                                .select("#" + cContentPanelId)
+                                                .select('#ScenarioText')
+                                                .text(
+                                                    "\
+                                                    The xG contributed from passing plot is hotter than\
+                                                    xG contributed from running. This means that when Liverpool\
+                                                    have the ball around the pointer, passing has eventually led to\
+                                                    a larger overall xG than running. Quite a bit of xG has come\
+                                                    from short sideward or diagonally forward passes. However, in terms of xG\
+                                                    per play there are spots towards the left of the box, spots on the left wing,\
+                                                    the left of midfield, and the right wing which are attractive options.\
+                                                    Passes to these spots have not yielded too much xG overall but that is\
+                                                    probably because not too many passes were aimed there. Whenever\
+                                                    a pass was indeed made to these areas, a relatively high xG shot usually\
+                                                    followed. Similarly, despite not generating an overall high amount of Xg,\
+                                                    Liverpool do generate a relatively high xG shot often when they run towards\
+                                                    the box or towards the left of the box.\
+                                                    "
+                                                )
 
+
+                                        }
+
+
+                                        if ( d == dropdownScenarioOptions[2] ) {
+
+
+                                            updatePanel3ForInterations(
+                                                teamCode,
+                                                FolderPath,
+                                                36,
+                                                52,
+                                                d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementOriginCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementShotPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementShotCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementPassPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementPassCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementMovePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementMoveCumulativePanel3'),
+                                                colorScales,
+                                                cContentPanelId
+                                            )
+
+
+                                            d3
+                                                .select("#" + cContentPanelId)
+                                                .select('#ScenarioText')
+                                                .text(
+                                                    "\
+                                                    Neither of the total xPo generated plots look\
+                                                    very hot for either runs or passes, except for a short\
+                                                    pass towards the left wing. This means that\
+                                                    having the ball around the pointers hasn't eventually\
+                                                    results in a lot of overall xG for Liverpool. However, when\
+                                                    the player manages to either run into the midfield area\
+                                                    or get long balls either far up the left wing, near the\
+                                                    right side of the box, or in the box, then there is a\
+                                                    relatively high xG shot is usually generated.\
+                                                    "
+                                                )
+
+                                        }
+
+                                        if ( d == dropdownScenarioOptions[3] ) {
+
+                                            updatePanel3ForInterations(
+                                                teamCode,
+                                                FolderPath,
+                                                88,
+                                                8,
+                                                d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementOriginCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementShotPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementShotCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementPassPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementPassCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementMovePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementMoveCumulativePanel3'),
+                                                colorScales,
+                                                cContentPanelId
+                                            )
+
+                                            d3
+                                                .select("#" + cContentPanelId)
+                                                .select('#ScenarioText')
+                                                .text(
+                                                    "\
+                                                    There are hot patches on xPo and\
+                                                    total xPo generated. This means that Liverpool tend\
+                                                    to eventually score often and with high probability when\
+                                                    the ball is in the area around the marker. Running towards\
+                                                    the goal and towards the corner, and passing into\
+                                                    midfield and on the opposite wing are actions that\
+                                                    eventually end in goals with quite high probability.\
+                                                    However, in the case of running with the ball, most of\
+                                                    their goals have come from runs towards the box too, but\
+                                                    the passes that have led to more goals have been either\
+                                                    around the edge of the last third of the pitch, or passes\
+                                                    into the box, which are probably crosses.\
+                                                    "
+                                                )
+
+
+                                        }
+
+                                    };
+
+
+
+                                }
+
+
+                                d3.select('#' + cContentPanelId + "Panel0").selectAll('*').remove()
+                                d3.select('#' + cContentPanelId + "Panel4").selectAll('*').remove()
+                                d3.select('#' + cContentPanelId + "Panel1").selectAll('*').remove()
+                                d3.select('#' + cContentPanelId + "Panel5").selectAll('*').remove()
+                                d3.select('#' + cContentPanelId + "Panel3").selectAll('*').remove()
+
+                                fCreatePanel0(
+                                    cContentPanelId + "Panel0",
+                                    dataOriginProbabilitiesShotFor,
+                                    colorScales
+                                )
+
+                                fCreatePanel4(
+                                    cContentPanelId + "Panel4",
+                                    dataOriginProbabilitiesPassFor,
+                                    colorScales
+                                )
+
+
+                                fCreatePanel5(
+                                    cContentPanelId + "Panel5",
+                                    dataOriginProbabilitiesMoveFor,
+                                    colorScales
+                                )
+
+
+                                fCreatePanel1(
+                                    cContentPanelId + "Panel1",
+                                    dataOriginProbabilitiesFor,
+                                    colorScales
+                                )
+
+                                var cContentPanel3Id = cContentPanelId + "Panel3"
+
+                                if ( teamCode == 'Liverpool' ) { 
+                                    
+                                    d3.select("#" + cContentPanel3Id).append("p").text(
+                                        "You can pick a scenario from the dropdown below\
+                                        to get started with some examples.\
+                                        "
+                                    )
+
+                                    var dropdownScenario = d3.select("#" + cContentPanel3Id)
+                                        .append("select")
+                                        .attr("id","ScenarioSelection")
+
+                                    dropdownScenarioOptions = [
+                                        '--No Scenario--',
+                                        'Scenario 1: In the hole',
+                                        'Scenario 2: Deep down the pitch on the left',
+                                        'Scenario 3: Wide on the right wing'
+                                    ]
+
+                                    dropdownScenario.selectAll("option")
+                                        .data(dropdownScenarioOptions)
+                                        .enter().append("option")
+                                        .attr("value", function (d) { return d; })
+                                        .text(function (d) { return d; })
+
+                                    dropdownScenario
+                                        .on("change", function(d) { 
+
+                                            dropdownScenarioChange(
+                                                d3.select(this).property("value"),
+                                                cContentPanel3Id,
+                                                dropdownScenarioOptions
+                                            )
+
+                                        });
+
+
+                                    d3.select("#" + cContentPanel3Id).append("p")
+                                        .attr('id','ScenarioText')
+
+
+                                }
+
+                                fCreatePanel3(
+                                    cContentPanel3Id,
+                                    dataOriginProbabilitiesFor,
+                                    dataOriginProbabilitiesShotFor,
+                                    dataOriginProbabilitiesPassFor,
+                                    dataOriginProbabilitiesMoveFor,
+                                    colorScales,
+                                    teamCode,
+                                    FolderPath
+                                )
+
+
+                            });
 
                         });
 
