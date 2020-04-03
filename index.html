@@ -16,18 +16,19 @@
         margin:auto;
         width:800px;
         padding-bottom:20px;
-        font-family:verdana;
-        font-size: 1.5em;
+        font-family:Helvetica;
+        font-size: 1.3em;
         text-align: justify;
         /* border-bottom:1px dotted; */
         /* display: inline-block; */
     }
-    h2 { 
+    ul { 
         display: table;
         margin:auto;
         width:800px;
         padding-bottom:20px;
-        font-size: 2.5em;
+        font-size: 1.3em;
+        font-family:Helvetica;
         /* border-bottom:1px dotted; */
         /* display: inline-block; */
     }
@@ -37,6 +38,7 @@
         width:800px;
         padding-bottom:20px;
         font-size: 2em;
+        font-family:Helvetica;
         /* border-bottom:1px dotted; */
         /* display: inline-block; */
     }
@@ -46,6 +48,7 @@
         width:800px;
         padding-bottom:20px;
         font-size: 1.5em;
+        font-family:Helvetica;
         /* border-bottom:1px dotted; */
         /* display: inline-block; */
     }
@@ -53,26 +56,21 @@
         display: block;
         margin:auto;
     }
-    ul { 
-        display: table;
-        margin:auto;
-        width:800px;
-        padding-bottom:20px;
-        font-size: 1.5em;
-        /* border-bottom:1px dotted; */
-        /* display: inline-block; */
-    }
     select { 
+        background-color: white;
+        padding: 8px 16px;
         display: table;
         margin:auto;
         margin-top:10px;
         margin-bottom:10px;
+        font-family:Helvetica;
         /* border-bottom:1px dotted; */
         /* display: inline-block; */
     }
     .plotTitle {
        font-size:0.8em;
        font-weight: bold;
+        font-family:Helvetica;
     }
     /* Style tab links */
     .tablink {
@@ -86,6 +84,7 @@
         font-size: 17px;
         width: 25%;
         height: 80px;
+        font-family:Helvetica;
     }
 
     .tablink:hover {
@@ -98,18 +97,7 @@
         display: none;
         padding: 100px 20px;
         height: 100%;
-    }
-
-    /* Style the tab content (and add height:100% for full page content) */
-    .divContent {
-        /* color: white; */
-        display: none;
-        padding: 120px 20px;
-        height: 100%;
-    }
-    select {
-        background-color: white;
-        padding: 8px 16px;
+        font-family:Helvetica;
     }
 
 </style>
@@ -125,13 +113,13 @@
 
 <div id = 'Intro' class="tabContent">
 
-    <h2>What is xPo?</h2>
+    <h3>What is xPo?</h3>
 
     <p>
         xPo expands to expected potential.
     </p>
 
-    <h2>Why Do We Need xPo?</h2>
+    <h3>Why Do We Need xPo?</h3>
 
     <p>
         I wanted to figure out a way to measure the value of various 
@@ -145,7 +133,7 @@
         in the Comparisons With Other Models section.
     </p>
 
-    <h2>What is xG?</h2>
+    <h3>What is xG?</h3>
 
     <p>
         For those not familiar with xG, it's just a probability assigned to a 
@@ -158,7 +146,7 @@
         methods to calculate xG which I describe later. 
     </p>
 
-    <h2>How is xPo calculated?</h2>
+    <h3>How is xPo calculated?</h3>
 
     <p>
         If you have the ball, then there are three things you can do with it:
@@ -246,7 +234,7 @@
         for those coordinates.
     </p>
 
-    <h2>Data Processing</h2>
+    <h3>Data Processing</h3>
 
     <p>
         I had access to sequential passing data and I had to infer plays from
@@ -261,7 +249,7 @@
         20 units where the pitch has been stretched to fit a 120 X 80 unit size.
     </p>
 
-    <h2>Viewing Pointers</h2>
+    <h3>Viewing Pointers</h3>
 
     <p>
         Different colours mean different scales. The brightest red is not the same
@@ -287,19 +275,23 @@
 </div>
 
 <div id = 'ModelComparison' class="tabContent">
+
+    <p>
+        The two models that I'm familiar with that people use to perform this 
+        sort of analysis are listed below along with my opinion on the
+        advatanges or disadvantages of each of them compared to xPo. 
+    </p>
+
     
-    <h2>xG chain</h2>
+    <h3>xG chain</h3>
 
     <p>
         This takes the xG of the shot and splits it up equally between all
-        actions in the play. It's quick and simple and easy to understand but
-        is too simplified for my liking. It may give too much credit to some
-        actions or too little credit to some other actions. By not considering
-        other plays which did not eventually lead to a shot, it also misses out
-        on some vital inputs.
+        actions in that play. It's quick and simple and easy to understand but
+        is too simplified and as a result may not give faithful results.
     </p>
 
-    <h2>xT</h2>
+    <h3>xThreat</h3>
 
     <p>
         Some things that I consider pros for xPo over xT -
@@ -501,128 +493,6 @@
             .range([0, 2 * nPitchDomainSize4 * 80 / 120]);
 
         addPitchOutlines = function ( 
-            pitchElementMarkings
-        ) {
-
-            pitchElementMarkings.append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("height", xScale4(pitch.width))
-                .attr("width", xScale4(pitch.length))
-                .attr("stroke", pitch.paintColor)
-                .attr("fill", "none")
-
-
-            var centerSpot = pitchElementMarkings.append("circle")
-                .attr("cy", xScale4(pitch.width/2))
-                .attr("cx", xScale4(pitch.length/2))
-                .attr("r", 1)
-                .attr("fill", pitch.paintColor)
-
-            var centerCircle = pitchElementMarkings.append("circle")
-                .attr("cy", xScale4(pitch.width/2))
-                .attr("cx", xScale4(pitch.length/2))
-                .attr("r", xScale4(pitch.centerCircleRadius))
-                .attr("fill", 'none')
-                .attr("stroke", pitch.paintColor)
-
-            var halfwayLine = pitchElementMarkings.append("line")
-                .attr("x1", xScale4(pitch.length/2))
-                .attr("x2", xScale4(pitch.length/2))
-                .attr("y1", 0)
-                .attr("y2", xScale4(pitch.width))
-                .attr("stroke", pitch.paintColor)
-
-            // corners
-
-            function addPath(pathData, parentElement){
-                parentElement.append("path")
-                    .attr("d", pathData)
-                    .attr("stroke", pitch.paintColor)
-                    .attr("fill", "none") 
-            }
-
-            // top left
-            var pathData = "M0," + xScale4(1) + "A " + xScale4(1) +" " + xScale4(1) + " 45 0 0" + xScale4(1) + ",0";
-            addPath(pathData, pitchElementMarkings);
-
-            // top right
-            var pathData = "M"+xScale4(pitch.length - 1)+",0 A " + xScale4(1) +" " + xScale4(1) + " 45 0 0" + xScale4(pitch.length) + ","+ xScale4(1);
-            addPath(pathData, pitchElementMarkings);
-
-            // bottom left
-            var pathData = "M0," + xScale4(pitch.width-1) + "A " + xScale4(1) +" " + xScale4(1) + " 45 0 1" + xScale4(1) + "," + xScale4(pitch.width);
-            addPath(pathData, pitchElementMarkings);
-
-            // bottom right
-            var pathData = "M" + xScale4(pitch.length - 1) + ',' + xScale4(pitch.width) + "A " + xScale4(1) +" " + xScale4(1) + " 45 0 1" + xScale4(pitch.length) + "," + xScale4(pitch.width - 1);
-            addPath(pathData, pitchElementMarkings);
-
-            // Top Penalty Area
-            var penaltyAreaTop = pitchElementMarkings.append("g");
-            var pathData = "M0," + xScale4(pitch.width/2 - 4 - 18) +"L" + xScale4(18) + "," + xScale4(pitch.width/2 - 4 - 18) + "V" + xScale4(pitch.width/2 + 4 + 18) + "H0";
-            addPath(pathData, penaltyAreaTop);
-
-            // Top Penalty Area
-            var pathData = "M0," + xScale4(pitch.width/2 - 4 - 6) +"L" + xScale4(6) + "," + xScale4(pitch.width/2 - 4 - 6) + "v" + xScale4(20) + "H0";
-            // var pathData = "M" + xScale4(pitch.width/2 - 4 - 6) +",0L" + xScale4(pitch.width/2 - 4 - 6) + "," + xScale4(6) + "h" + xScale4(20) + "V0";
-            addPath(pathData, penaltyAreaTop);
-
-            // Top D
-            var pathData = "M" + xScale4(18) + "," + xScale4(pitch.width/2 - 8) + "A" + xScale4(10) + " " + xScale4(10) + " 5 0 1 " + xScale4(18) + "," + xScale4(pitch.width/2 + 8);
-            // var pathData = "M" + xScale4(pitch.width/2 - 8) +","+xScale4(18)+"A "+xScale4(10)+" "+ xScale4(10) +" 5 0 0 " + xScale4(pitch.width/2 + 8) +","+xScale4(18);
-            addPath(pathData, penaltyAreaTop);
-
-            // Top Penalty Spot
-            var penaltySpotTop = penaltyAreaTop.append("circle")
-                .attr("cy", xScale4(pitch.width/2))
-                .attr("cx", xScale4(12))
-                .attr("r", 1)
-                .attr("fill", pitch.paintColor)
-                .attr("stroke", pitch.paintColor)
-
-            penaltyAreaBottom = pitchElementMarkings.append("g");
-            penaltyAreaBottom.html(penaltyAreaTop.html());
-            penaltyAreaBottom.attr("transform", "rotate(180) translate(-" + xScale4(pitch.length)+",-"+xScale4(pitch.width)+")")
-
-
-            // Direction of attack
-            nOffsetFromPitch = 3
-            nVerticalHeight = 3
-            var pathData = "M" + xScale4(0) + "," + xScale4(pitch.width + nOffsetFromPitch) + 
-                "V" + xScale4(pitch.width + nVerticalHeight + nOffsetFromPitch) + 
-                "L" + xScale4((0) + 5) + "," + xScale4(pitch.width + (nVerticalHeight/2) + nOffsetFromPitch) + 
-                "L" + xScale4(0) + "," + xScale4(pitch.width + nOffsetFromPitch);
-            // var pathData = "M" + xScale4(pitch.length/2) + "," + xScale4(pitch.width + nOffsetFromPitch) + 
-            //     "V" + xScale4(pitch.width + nVerticalHeight + nOffsetFromPitch) + 
-            //     "L" + xScale4((pitch.length/2) + 5) + "," + xScale4(pitch.width + (nVerticalHeight/2) + nOffsetFromPitch) + 
-            //     "L" + xScale4(pitch.length/2) + "," + xScale4(pitch.width + nOffsetFromPitch);
-
-            // var pathData = "M" + xScale4(pitch.width/2 - 4 - 6) +",0L" + xScale4(pitch.width/2 - 4 - 6) + "," + xScale4(6) + "h" + xScale4(20) + "V0";
-            pitchElementMarkings.append("path")
-                .attr("d", pathData)
-                .attr("stroke", pitch.grassColor)
-                .attr("fill", pitch.grassColor) ;
-            
-            pitchElementMarkings.append("text")
-                .attr("text-anchor", "start")
-                .attr("alignment-baseline", "central")
-                .attr("font-size", "0.7em")
-                .attr("x", xScale4( nOffsetFromPitch + nVerticalHeight ))//padding of 4px
-                .attr("y", xScale4(pitch.width + (nVerticalHeight/2) + nOffsetFromPitch))
-                .text("Direction of attack");
-
-
-            // top right
-            // var pathData = "M"+xScale4(pitch.length - 1)+","+xScale4(pitch.width)+" A " + xScale4(1) +" " + xScale4(1) + " 45 0 1" + xScale4(pitch.length) + ","+ xScale4(pitch.length-1);
-            // addPath(pathData, pitchElementMarkings);
-
-
-
-        }
-
-
-        addPitchOutlines2 = function ( 
             pitchElementMarkings,
             xScale
         ) {
@@ -744,24 +614,8 @@
 
         }
 
-        addPitchColor = function ( pitchElement ) {
-
-            pitchElement.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("height", xScale4(pitch.width))
-            .attr("width", xScale4(pitch.length))
-            // .attr("x", -nBlockWidth / 2)
-            // .attr("y", -nBlockWidth / 2)
-            // .attr("height", xScale4(pitch.width + (nBlockWidth)))
-            // .attr("width", xScale4(pitch.length + (nBlockWidth)))
-            .attr("fill", pitch.grassColor)
-
-            return pitchElement
-
-        }
-
-        addPitchColor2 = function ( 
+        
+        addPitchColor = function ( 
             pitchElement,
             xScale
         ) {
@@ -781,7 +635,7 @@
 
         }
 
-        addPlotTitle2 = function ( 
+        addPlotTitle = function ( 
             pitchElement,
             titleText,
             xScale,
@@ -1111,14 +965,14 @@
                     "translate(" + xScale2(pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")"
                 )
                 
-            addPlotTitle2( 
+            addPlotTitle( 
                 pitchElementShotPanel0,
                 'xPo',
                 xScale2,
                 nBlockWidth
             )
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementShotPanel0,
                 xScale2
             )
@@ -1127,7 +981,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementShotMarkingsPanel0,
                 xScale = xScale2
             )
@@ -1153,14 +1007,14 @@
                     "translate(" +xScale2(pitch.frame.width + pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")"
                 )
 
-            addPlotTitle2( 
+            addPlotTitle( 
                 pitchElementShotCumulativePanel0,
                 'Total xPo generated',
                 xScale2,
                 nBlockWidth
             )
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementShotCumulativePanel0,
                 xScale2
             )
@@ -1169,7 +1023,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementShotMarkingsPanel0,
                 xScale = xScale2
             )
@@ -1216,14 +1070,14 @@
             var pitchElementPassPanel4 = svgPanel4.append("g")
                 .attr("transform", "translate(" + xScale2(pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")")
             
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementPassPanel4,
                 'xPo from passes',
                 xScale2,
                 nBlockWidth
             )
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementPassPanel4,
                 xScale2
             )
@@ -1232,7 +1086,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementMarkingsOriginPanel4,
                 xScale = xScale2
             )         
@@ -1256,14 +1110,14 @@
                 .attr("transform", "translate(" +xScale2(pitch.frame.width + pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")")
 
             
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementPassCumulativePanel4,
                 'Total xPo generated from passes',
                 xScale2,
                 nBlockWidth
             )
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementPassCumulativePanel4,
                 xScale2
             )
@@ -1272,7 +1126,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementMarkingsOriginCumulativePanel4,
                 xScale = xScale2
             )
@@ -1320,7 +1174,7 @@
                 .attr("transform", "translate(" +xScale2(pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")")
 
             
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementMovePanel5,
                 'xPo from runs',
                 xScale2,
@@ -1328,7 +1182,7 @@
             )
 
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementMovePanel5,
                 xScale2
             )
@@ -1337,7 +1191,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementMarkingsOriginPanel5,
                 xScale2
             )  
@@ -1360,20 +1214,23 @@
             var pitchElementMoveCumulativePanel5 = svgPanel5.append("g")
                 .attr("transform", "translate(" +xScale2(pitch.frame.width + pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")")
 
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementMoveCumulativePanel5,
                 'Total xPo generated from runs',
                 xScale2,
                 nBlockWidth
             )
 
-            addPitchColor(pitchElementMoveCumulativePanel5)
+            addPitchColor(
+                pitchElementMoveCumulativePanel5,
+                xScale4
+            )
                 
             var pitchElementMarkingsOriginCumulativePanel5 = pitchElementMoveCumulativePanel5
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementMarkingsOriginCumulativePanel5,
                 xScale2
             )
@@ -1424,14 +1281,14 @@
             var pitchElementOriginPanel1 = svgPanel1.append("g")
                 .attr("transform", "translate(" + xScale2(pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")")
     
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementOriginPanel1,
                 'xPo overall',
                 xScale2,
                 nBlockWidth
             )
     
-            addPitchColor2(
+            addPitchColor(
                 pitchElementOriginPanel1,
                 xScale2
             )
@@ -1440,7 +1297,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
     
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementMarkingsOriginPanel1,
                 xScale2
             )         
@@ -1463,14 +1320,14 @@
             var pitchElementOriginCumulativePanel1 = svgPanel1.append("g")
                 .attr("transform", "translate(" + xScale2(pitch.frame.width + pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")")
     
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementOriginCumulativePanel1,
                 'Total xPo generated overall',
                 xScale2,
                 nBlockWidth
             )
     
-            addPitchColor2(
+            addPitchColor(
                 pitchElementOriginCumulativePanel1,
                 xScale2
             )
@@ -1479,7 +1336,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
     
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementMarkingsOriginCumulativePanel1,
                 xScale2
             )             
@@ -1542,20 +1399,26 @@
                 .attr('id','pitchElementOriginPanel3')
                 .attr("transform", "translate(" +xScale4(pitch.padding.left) + "," + xScale4(pitch.padding.top) + ")")
 
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementOriginPanel3,
                 'xPo overall',
                 xScale4,
                 nBlockWidth
             )
 
-            addPitchColor(pitchElementOriginPanel3)
+            addPitchColor(
+                pitchElementOriginPanel3,
+                xScale4
+            )
                 
             var pitchElementOriginMarkingsPanel3 = pitchElementOriginPanel3
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines(pitchElementOriginMarkingsPanel3)         
+            addPitchOutlines(
+                pitchElementOriginMarkingsPanel3,
+                xScale4
+            )         
 
             pitchElementOriginPanel3.selectAll()
                 .data(
@@ -1637,14 +1500,14 @@
                 .attr("transform", "translate(" +xScale4(pitch.padding.left) + "," + xScale4(pitch.padding.top + pitch.frame.length) + ")")
 
 
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementOriginCumulativePanel3,
                 'Total xPo generated overall',
                 xScale4,
                 nBlockWidth
             )
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementOriginCumulativePanel3,
                 xScale4
             )
@@ -1653,7 +1516,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementOriginCumulativeMarkingsPanel3,
                 xScale4
             )         
@@ -1747,7 +1610,7 @@
                     "translate(" + ( xScale2(pitch.padding.left) + xScale4(pitch.frame.width) ) + "," + xScale4(pitch.padding.top) + ")"               
                 )
 
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementMovePanel3,
                 'Running from there to here, xPo',
                 xScale2,
@@ -1755,7 +1618,7 @@
             )
 
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementMovePanel3,
                 xScale2
             )
@@ -1764,7 +1627,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementMoveMarkingsPanel3,
                 xScale2
             )
@@ -1779,7 +1642,7 @@
                 )
 
                 
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementMoveCumulativePanel3,
                 'Running from there to here, total xPo generated',
                 xScale2,
@@ -1787,7 +1650,7 @@
             )
 
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementMoveCumulativePanel3,
                 xScale2
             )
@@ -1796,7 +1659,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementMoveCumulativeMarkingsPanel3,
                 xScale2
             )
@@ -1814,14 +1677,14 @@
                     "translate(" + ( xScale2(pitch.frame.width + pitch.padding.left) + xScale4(pitch.frame.width ) ) + "," + xScale4(pitch.padding.top) + ")"
                 )
 
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementPassPanel3,
                 'Passing from there to here, xPo',
                 xScale2,
                 nBlockWidth
             )
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementPassPanel3,
                 xScale2
             )
@@ -1830,7 +1693,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementPassMarkingsPanel3,
                 xScale2
             )
@@ -1843,14 +1706,14 @@
                 )
 
 
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementPassCumulativePanel3,
                 'Passing from there to here, total xPo generated',
                 xScale2,
                 nBlockWidth
             )
 
-            addPitchColor2(
+            addPitchColor(
                 pitchElementPassCumulativePanel3,
                 xScale2
             )
@@ -1859,7 +1722,7 @@
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines2(
+            addPitchOutlines(
                 pitchElementPassCumulativeMarkingsPanel3,
                 xScale2
             )
@@ -1886,20 +1749,26 @@
                     // "translate(" +xScale4(pitch.frame.width + pitch.frame.width + pitch.frame.width + pitch.padding.left) + "," + xScale4(pitch.padding.top) + ")"
                 )
 
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementShotPanel3,
                 'xG',
                 xScale4,
                 nBlockWidth
             )
 
-            addPitchColor(pitchElementShotPanel3)
+            addPitchColor(
+                pitchElementShotPanel3,
+                xScale4
+            )
 
             var pitchElementShotMarkingsPanel3 = pitchElementShotPanel3
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines(pitchElementShotMarkingsPanel3)
+            addPitchOutlines(
+                pitchElementShotMarkingsPanel3,
+                xScale4
+            )
 
             pitchElementShotPanel3.selectAll()
                 .data(
@@ -1933,20 +1802,26 @@
                     "translate(" +xScale4(pitch.padding.left) + "," + xScale4(pitch.padding.top + pitch.frame.length + pitch.frame.length + pitch.frame.length) + ")"
                 )
 
-            addPlotTitle2(
+            addPlotTitle(
                 pitchElementShotCumulativePanel3,
                 'Total xPo generated',
                 xScale4,
                 nBlockWidth
             )
 
-            addPitchColor(pitchElementShotCumulativePanel3)
+            addPitchColor(
+                pitchElementShotCumulativePanel3,
+                xScale4
+            )
                 
             var pitchElementShotMarkingsPanel3 = pitchElementShotCumulativePanel3
                 .append("g")
                 .attr('class','pitchMarkings');
 
-            addPitchOutlines(pitchElementShotMarkingsPanel3)
+            addPitchOutlines(
+                pitchElementShotMarkingsPanel3,
+                xScale4
+            )
                 
             pitchElementShotCumulativePanel3.selectAll()
                 .data(
@@ -2049,9 +1924,19 @@
                 .select('#ScenarioText')
                 .text(null)
 
+            // when updated from the secnario drop down, that's taken care
+            // of in the drop down's change function itself
             d3.select("#" + cContentPanelId)
-                .select('ScenarioSelection')
-                .attr("value", '--No Scenario--')
+                .select('#ScenarioSelection')
+                .selectAll("option")
+                .property(
+                    "selected", 
+                    function(d){ 
+                        
+                        return d === '--No Scenario--'; 
+
+                    }
+                )
 
             highlightHeatmapCoordinate(
                 pitchElementOriginPanel3,
@@ -2770,21 +2655,19 @@
 
                                     // Handler for dropdownScenario value change
                                     var dropdownScenarioChange = function(
-                                        d,
+                                        whichScenario,
                                         cContentPanelId,
                                         dropdownScenarioOptions
                                     ) {
 
-                                        if ( d == dropdownScenarioOptions[0] ) {
+                                        if ( whichScenario == dropdownScenarioOptions[0] ) {
 
                                             d3
                                                 .select("#" + cContentPanelId)
                                                 .select('#ScenarioText')
                                                 .text(null)
 
-                                        }
-
-                                        if ( d == dropdownScenarioOptions[1] ) {
+                                        } else if ( whichScenario == dropdownScenarioOptions[1] ) {
 
 
                                             updatePanel3ForInterations(
@@ -2825,10 +2708,7 @@
                                                 )
 
 
-                                        }
-
-
-                                        if ( d == dropdownScenarioOptions[2] ) {
+                                        } else if ( whichScenario == dropdownScenarioOptions[2] ) {
 
 
                                             updatePanel3ForInterations(
@@ -2865,9 +2745,7 @@
                                                     "
                                                 )
 
-                                        }
-
-                                        if ( d == dropdownScenarioOptions[3] ) {
+                                        } else if ( whichScenario == dropdownScenarioOptions[3] ) {
 
                                             updatePanel3ForInterations(
                                                 teamCode,
@@ -2907,6 +2785,18 @@
 
 
                                         }
+
+                                        d3.select("#" + cContentPanelId)
+                                            .select('#ScenarioSelection')
+                                            .selectAll("option")
+                                            .property(
+                                                "selected", 
+                                                function(d){ 
+
+                                                    return d === whichScenario; 
+
+                                                }
+                                            )
 
                                     };
 
