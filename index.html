@@ -412,25 +412,38 @@
     if ( true ) {
 
         allTeamNames = [
+            'Chelsea',
+            'Leicester',
             'Liverpool',
             'Manchester City',
-            'Chelsea',
             'Manchester United',
             'Sheffield United',
             'Wolves'
         ]
 
         allTeamCodes = [
-            'Liverpool',
-            'ManCity',
-            'Chelsea',
-            'ManUtd',
-            'SheffieldUtd',
-            'Wolves'
+            'Chelsea_For_Team',
+            'Leicester_For_Team',
+            'Liverpool_For_Team',
+            'ManCity_For_Team',
+            'ManUtd_For_Team',
+            'SheffieldUtd_For_Team',
+            'Wolves_For_Team'
         ]
 
-        // teamCode = 'ManCity'
-        teamCode = 'Liverpool'
+        selectedTeamCode = 'Liverpool_For_Team'
+
+
+        nBlockWidth = 4
+
+        cWhatScaleToUse = 'Team'
+
+
+
+
+
+
+
 
         cHighlightColour = '#FF69B4'
 
@@ -460,8 +473,6 @@
         pitch['frame']['length'] = pitch.padding.top + pitch.width + pitch.padding.bottom
 
         nPitchDomainSize4 = 300
-
-        nBlockWidth = 2
 
 
     }
@@ -1498,8 +1509,7 @@
             dataOriginProbabilitiesPassFor,
             dataOriginProbabilitiesMoveFor,
             colorScales,
-            teamCode,
-            FolderPath
+            teamCode
         ) {
 
             Panel3Click = {}
@@ -1574,7 +1584,6 @@
 
                         updatePanel3ForInterations(
                             teamCode,
-                            FolderPath,
                             d.x,
                             d.y,
                             pitchElementOriginPanel3,
@@ -1605,7 +1614,6 @@
                     
                     updatePanel3ForInterations(
                         teamCode,
-                        FolderPath,
                         d.x,
                         d.y,
                         pitchElementOriginPanel3,
@@ -1677,7 +1685,6 @@
 
                         updatePanel3ForInterations(
                             teamCode,
-                            FolderPath,
                             d.x,
                             d.y,
                             pitchElementOriginPanel3,
@@ -1702,7 +1709,6 @@
                     
                     updatePanel3ForInterations(
                         teamCode,
-                        FolderPath,
                         d.x,
                         d.y,
                         pitchElementOriginPanel3,
@@ -2024,7 +2030,6 @@
 
         updatePanel3ForInterations = function(
             teamCode,
-            FolderPath,
             x,
             y,
             pitchElementOriginPanel3,
@@ -2081,7 +2086,7 @@
             )
 
             d3.csv(
-                './Data/' + teamCode + '/' + FolderPath + "/DataGranular/x" + x + "_y" + y + ".csv", 
+                './Data/' + teamCode.replace(/_/g,'/') + "/DataGranular/x" + x + "_y" + y + ".csv", 
                 function(dataGranular) {
                     
                     updateBallMovementHeatmap(
@@ -2214,6 +2219,8 @@
         .enter().append("option")
         .attr("value", function (d) { return d; })
         .text(function (d, i) { return allTeamNames[i]; })
+        .property("selected", function(d){ return d === selectedTeamCode; })
+
 
         dropdownTeam
         .on("change", function(d) { 
@@ -2237,7 +2244,8 @@
 
         updatePanelParentWithData(
             d,
-            cContentPanelId
+            cContentPanelId,
+            cWhatScaleToUse
         )
         
     }
@@ -2300,7 +2308,7 @@
                     from outside the box that often.\
                     "
                 )
-                .attr('class','TeamSpecific Liverpool')
+                .attr('class','TeamSpecific Liverpool_For_Team')
 
             d3.select("#" + cContentPanelId).append("p")
                 .text(
@@ -2355,7 +2363,7 @@
                     returns are quite decent.\
                     "
                 )
-                .attr('class','TeamSpecific Liverpool')
+                .attr('class','TeamSpecific Liverpool_For_Team')
 
         }
 
@@ -2393,7 +2401,7 @@
                     total generated xPo.\
                     "
                 )
-                .attr('class','TeamSpecific Liverpool')
+                .attr('class','TeamSpecific Liverpool_For_Team')
 
 
         }
@@ -2446,7 +2454,7 @@
                     strategy in one figure.\
                     "
                 )
-                .attr('class','TeamSpecific Liverpool')
+                .attr('class','TeamSpecific Liverpool_For_Team')
 
         }
 
@@ -2515,7 +2523,8 @@
 
     updatePanelParentWithData = function(
         teamCode,
-        cContentPanelId
+        cContentPanelId,
+        typeOfDataset
     ) {
 
         d3.select('#' + cContentPanelId)
@@ -2534,20 +2543,17 @@
             )
 
 
-        d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilities.csv', function(dataOriginProbabilitiesFor) {
+        d3.csv('./Data/' + teamCode.replace(/_/g,'/') + '/OriginProbabilities.csv', function(dataOriginProbabilitiesFor) {
 
-            d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilitiesPass.csv', function(dataOriginProbabilitiesPassFor) {
+            d3.csv('./Data/' + teamCode.replace(/_/g,'/') + '/OriginProbabilitiesPass.csv', function(dataOriginProbabilitiesPassFor) {
 
-                d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilitiesMove.csv', function(dataOriginProbabilitiesMoveFor) {
+                d3.csv('./Data/' + teamCode.replace(/_/g,'/') + '/OriginProbabilitiesMove.csv', function(dataOriginProbabilitiesMoveFor) {
 
-                    d3.csv('./Data/' + teamCode + '/For/Team/OriginProbabilitiesShot.csv', function(dataOriginProbabilitiesShotFor) {
+                    d3.csv('./Data/' + teamCode.replace(/_/g,'/') + '/OriginProbabilitiesShot.csv', function(dataOriginProbabilitiesShotFor) {
                         
-                        d3.csv('./Data/TeamOriginScale.csv', function(dataOriginScale) {
+                        d3.csv('./Data/' + typeOfDataset + 'OriginScale.csv', function(dataOriginScale) {
 
-                            d3.csv('./Data/TeamGranularScale.csv', function(dataGranularScale) {
-
-
-                                var FolderPath = "For/Team/"
+                            d3.csv('./Data/' + typeOfDataset + 'GranularScale.csv', function(dataGranularScale) {
 
 
                                 // local functions
@@ -2782,8 +2788,7 @@
 
 
                                             updatePanel3ForInterations(
-                                                teamCode,
-                                                FolderPath,
+                                                teamCode,                                                
                                                 88,
                                                 36,
                                                 d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
@@ -2828,7 +2833,6 @@
 
                                             updatePanel3ForInterations(
                                                 teamCode,
-                                                FolderPath,
                                                 36,
                                                 52,
                                                 d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
@@ -2867,7 +2871,6 @@
 
                                             updatePanel3ForInterations(
                                                 teamCode,
-                                                FolderPath,
                                                 88,
                                                 8,
                                                 d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
@@ -2946,7 +2949,7 @@
 
                                 var cContentPanel3Id = cContentPanelId + "Panel3"
 
-                                if ( teamCode == 'Liverpool' ) { 
+                                if ( teamCode == 'Liverpool_For_Team' ) { 
                                     
                                     d3.select("#" + cContentPanel3Id).append("p").text(
                                         "You can pick a scenario from the dropdown below\
@@ -2996,8 +2999,7 @@
                                     dataOriginProbabilitiesPassFor,
                                     dataOriginProbabilitiesMoveFor,
                                     colorScales,
-                                    teamCode,
-                                    FolderPath
+                                    teamCode
                                 )
 
 
@@ -3016,13 +3018,14 @@
     }
 
     createPanelParent(
-        teamCode,
+        selectedTeamCode,
         cContentPanelId
     )
 
     updatePanelParentWithData(
-        teamCode,
-        cContentPanelId
+        selectedTeamCode,
+        cContentPanelId,
+        cWhatScaleToUse
     )
 
 </script>
