@@ -604,7 +604,7 @@
                 .attr("alignment-baseline", "central")
                 .attr("font-size", "0.7em")
                 .attr("x", xScale4( nOffsetFromPitch + nVerticalHeight ) )//padding of 4px
-                .attr("y", ( xScale(pitch.width + nOffsetFromPitch) + xScale4(nVerticalHeight/2) ))
+                .attr("y", ( xScale(pitch.width + nOffsetFromPitch) + xScale4(nVerticalHeight/1.8) ))
                 .text("Direction of attack");
 
 
@@ -650,7 +650,26 @@
                 .text(titleText)
                 .attr("alignment-baseline", "bottom")
                 .attr('x', 0)
-                .attr('y', -xScale(0.8 * nBlockWidth))
+                .attr('y', -xScale(1 * nBlockWidth))
+
+        }
+
+        addPlotLegend = function ( 
+            pitchElement,
+            xScale,
+            nBlockWidth,
+            colorScale,
+            pitchlength
+        ) {
+
+            pitchElement
+                .append('rect')
+                .attr("alignment-baseline", "bottom")
+                .attr('x', xScale(pitchlength - (nBlockWidth * 1)))
+                .attr('y', -xScale(1.8 * nBlockWidth))
+                .attr('height',xScale(nBlockWidth))
+                .attr('width', xScale(nBlockWidth * 1))
+                .attr('fill', colorScale(colorScale.domain()[1]) )
 
         }
 
@@ -973,7 +992,16 @@
                 xScale2,
                 nBlockWidth
             )
+    
+            // addPlotLegend( 
+            //     pitchElementShotPanel0,
+            //     xScale2,
+            //     nBlockWidth,
+            //     colorScales['myShotProbabilityColor'],
+            //     pitch.length
+            // )
 
+            
             addPitchColor(
                 pitchElementShotPanel0,
                 xScale2
@@ -1225,7 +1253,7 @@
 
             addPitchColor(
                 pitchElementMoveCumulativePanel5,
-                xScale4
+                xScale2
             )
                 
             var pitchElementMarkingsOriginCumulativePanel5 = pitchElementMoveCumulativePanel5
@@ -2123,16 +2151,24 @@
     );
 
     dropdownTeamChange = function(
-        d,
+        selectedTeamCode,
         cContentPanelId
     ) {
 
+        d3.selectAll('.plotTitle').text('Updating')
+
         // d3.select('#' + cContentPanelId).selectAll('*').remove()
 
-        teamCode = d
+        // d3.select("#" + cContentPanelId).selectAll("*").remove()
+
+        // createPanelParent(
+        //     selectedTeamCode,
+        //     cContentPanelId
+        // )
+
 
         updatePanelParentWithData(
-            d,
+            selectedTeamCode,
             cContentPanelId,
             cWhatScaleToUse
         )
@@ -2186,7 +2222,7 @@
                 .append("div")
                 .attr("id", cContentPanelId + "Panel0")                                    
 
-            d3.select("#" + cContentPanelId).append("p")
+                d3.select("#" + cContentPanelId).append("p")
                 .text(
                     "\
                     For instance, Liverpool seem to have two spots of relatively\
@@ -2199,6 +2235,15 @@
                     "
                 )
                 .attr('class','TeamSpecific Liverpool_For_Team')
+
+            d3.select("#" + cContentPanelId).append("p")
+                .text(
+                    "\
+                    Thanks, Scott McTominay and Ederson, for that hilarious\
+                    red spot near the half line.\
+                    "
+                )
+                .attr('class','TeamSpecific ManUtd_For_Team')
 
             d3.select("#" + cContentPanelId).append("p")
                 .text(
