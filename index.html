@@ -457,9 +457,60 @@
                 right: 12,
                 left: 12
             },
-            paintColor: "#FFF",
-            grassColor: "#CCCCCC",
+            paintColor: "#FFFFFF",
+            grassColor: "#000000"
+            // grassColor: "#CCCCCC",
         };
+
+        zeroColour = pitch.grassColor
+
+        colorPalette = [
+            // '#b3e2cd',
+            // '#fdcdac',
+            // '#cbd5e8',
+            // '#f4cae4',
+            // '#e6f5c9',
+            // '#fff2ae',
+            // '#f1e2cc',
+            // '#cccccc'
+
+            // '#1b9e77',
+            // '#d95f02',
+            // '#7570b3',
+            // '#e7298a',
+            // '#66a61e',
+            // '#e6ab02',
+            // '#a6761d',
+            // '#666666'
+
+            // '#e41a1c',
+            // '#377eb8',
+            // '#4daf4a',
+            // '#984ea3',
+            // '#ff7f00',
+            // '#ffff33',
+            // '#ffffff',
+            // // '#a65628',
+            // "#e7298a"
+            // // '#f781bf'
+
+            '#a65628',
+            '#ffffff',
+
+            '#e31a1c',
+            '#33a02c',
+
+            '#1f78b4',
+            '#ff7f00',
+
+            '#ffff33',
+            '#984ea3'
+            // '#a6cee3',
+            // '#b2df8a',
+            // '#fb9a99',
+            // '#fdbf6f',
+
+        ]
 
         // it's a little confusing with the widths and lengths
         pitch['frame'] = []
@@ -2537,8 +2588,8 @@
                                     colorScales["myGranularNonShotProbabilityColor"] = d3.scaleLinear()
                                         .range(
                                             [
-                                                "#000000", 
-                                                "#a65628"
+                                                zeroColour, 
+                                                colorPalette[0]
                                             ]
                                         )
                                         .domain(
@@ -2552,9 +2603,9 @@
                                     colorScales["myGranularNonShotGoalsColor"] = d3.scaleLinear()
                                         .range(
                                             [
-                                                "#000000", 
+                                                zeroColour, 
                                                 // "#f781bf"
-                                                "#ffffff"
+                                                colorPalette[1]
                                             ]
                                         )
                                         .domain(
@@ -2579,10 +2630,10 @@
                                     colorScales["myShotProbabilityColor"] = d3.scaleLinear()
                                         .range(
                                             [
-                                                "#000000", 
+                                                zeroColour, 
                                                 // "#00003F",
                                                 // "#00007F",
-                                                "#e41a1c"
+                                                colorPalette[2]
                                             ]
                                         )
                                         .domain(
@@ -2595,7 +2646,7 @@
                                                 dataOriginScale[0]['Shot_GoalProbability']
                                             ]
                                         )
-                                        // .range(["#000000", "#FF0000"])
+                                        // .range(["#ffffff", "#FF0000"])
                                         // .domain([0,1])
 
                                     // Build color scale
@@ -2614,10 +2665,10 @@
                                     colorScales['myShotGoalsColor'] = d3.scaleLinear()
                                         .range(
                                             [
-                                                "#000000", 
+                                                zeroColour, 
                                                 // "#00003F",
                                                 // "#00007F",
-                                                "#4daf4a"
+                                                colorPalette[3]
                                             ]
                                         )
                                         .domain(
@@ -2630,7 +2681,7 @@
                                                 dataOriginScale[0]['Shot_WeightedProbabiliticGoals']
                                             ]
                                         )
-                                        // .range(["#000000", "#FF0000"])
+                                        // .range(["#ffffff", "#FF0000"])
                                         // .domain([0,1])
 
                                     // Build color scale
@@ -2646,10 +2697,10 @@
                                     colorScales['myNonShotProbabilityColor'] = d3.scaleLinear()
                                         .range(
                                             [
-                                                "#000000", 
+                                                zeroColour, 
                                                 // "#3F0000",
                                                 // "#7F0000",
-                                                "#377eb8"
+                                                colorPalette[4]
                                             ]
                                         )
                                         .domain(
@@ -2676,10 +2727,10 @@
                                     colorScales['myNonShotGoalsColor'] = d3.scaleLinear()
                                         .range(
                                             [
-                                                "#000000", 
+                                                zeroColour, 
                                                 // "#3F0000",
                                                 // "#7F0000",
-                                                "#ff7f00"
+                                                colorPalette[5]
                                             ]
                                         )
                                         .domain(
@@ -2697,8 +2748,8 @@
                                     colorScales['myProbabilityColor'] = d3.scaleLinear()
                                         .range(
                                             [
-                                                "#000000", 
-                                                "#ffff33"
+                                                zeroColour, 
+                                                colorPalette[6]
                                             ]
                                         )
                                         .domain(
@@ -2713,15 +2764,15 @@
                                                 dataOriginScale[0]['_GoalProbability']
                                             ]
                                         )
-                                        // .range(["#000000", "#FF0000"])
+                                        // .range(["#ffffff", "#FF0000"])
                                         // .domain([0,1])
 
                                     // Build color scale
                                     colorScales['myGoalsColor'] = d3.scaleLinear()
                                         .range(
                                             [
-                                                "#000000", 
-                                                "#984ea3"
+                                                zeroColour, 
+                                                colorPalette[7]
                                             ]
                                         )
                                         .domain(
@@ -2736,7 +2787,7 @@
                                                 dataOriginScale[0]['_WeightedProbabiliticGoals']
                                             ]
                                         )
-                                        // .range(["#000000", "#FF0000"])
+                                        // .range(["#ffffff", "#FF0000"])
                                         // .domain([0,1])
 
 
