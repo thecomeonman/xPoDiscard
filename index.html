@@ -169,9 +169,9 @@
             xPo for shots: This is the same as the xG of those shots.
         </li>
         <li>
-            xPo for passes: In the same spirit as xG, I evaluate the probability 
-            of a pass moving the ball from one area of the pitch to another
-            and eventually resulting in a shot(s) with a certain xG from that play.
+            xPo for passes: In the same spirit as xG, I evaluate the eventual xG 
+            a play is likely to generate after a pass moving the ball from one 
+            area of the pitch to another.
         </li>
         <li>
             xPo for runs: Calculated in the same way as xPo for passes
@@ -185,11 +185,11 @@
         see how many of them were goals, and the xG for that area of the pitch 
         is therefore the number of goals / number of shots for that area. We
         could use more sophisticated measures of xG if we could calculate it,
-        but I'm keeping it simple for now.
+        but we'll keep it simple for now.
     </p>
 
     <p>
-        Once we've calculated an xG for all areas of the pitch, we can
+        Once we've calculated the xG for all areas of the pitch, we can
         attribute these xG values back to the shots. Now onwards we care about 
         the xG for a shot, and we don't care about the actual result of the shot
         being a goal or not anymore.
@@ -206,7 +206,7 @@
     </p>
     
     <p>
-        Now let's say both the plays described above had a pass that originated
+        It so happens that both the plays described above had a pass that originated
         in the same area as each other and ended in the same area as each other,
         i.e. we have two instances of a similar pass being played, one in each play. 
         In one case the eventual xG is 0.3, and in the other the eventual xG is 0. 
@@ -237,16 +237,18 @@
     <h3>Data Processing</h3>
 
     <p>
-        I had access to sequential passing data and I had to infer plays from
-        it. I also extracted runs as all movement between the end coordinate of
+        I had access to sequential passing data and I had to infer plays and runs
+        from it. I marked plays based on criteria like whether the opposition 
+        managed a pass when posession changed, or whether it was a clearance, 
+        etc. I extracted runs as all movement between the end coordinate of
         a pass and the start coordinate of the next pass. There are likely some
-        edge cases that will sneak though and look funny.
+        edge cases that will sneak though and look funny though.
     </p>
     
     <p>
-        I also considered the movement between a pass only if the displacement
-        met a minimum length criterion. In this case the cut off was a length of
-        20 units where the pitch has been stretched to fit a 120 X 80 unit size.
+        I also considered the movement between a pass as a run only if the 
+        displacement met a length threshold. In this case the cut off was a length
+        of 20 units where the pitch has been stretched to fit a 120 X 80 unit size.
     </p>
 
     <h3>Viewing Pointers</h3>
@@ -426,7 +428,7 @@
         selectedTeamCode = 'Liverpool_For_Team'
 
 
-        nBlockWidth = 4
+        nBlockWidth = 2
 
         cWhatScaleToUse = 'Team'
 
@@ -1464,12 +1466,6 @@
                     }
 
                 })
-                .on('dblclick', function ( d ) {
-
-                    Panel3Click['x'] = null
-                    Panel3Click['y'] = null
-
-                })
                 .on('click', function ( d ) {
 
                     Panel3Click['x'] = d.x
@@ -1490,6 +1486,12 @@
                         colorScales,
                         cContentPanelId
                     )
+
+                })
+                .on('dblclick', function ( d ) {
+
+                    Panel3Click['x'] = null
+                    Panel3Click['y'] = null
 
                 })
                 
@@ -2078,10 +2080,12 @@
     d3.select("#" + cTeamSelectionPanelId)
         .append("p").text(
             "\
-            I have used data from the 2019/20 season until March 2020 for each\
-            team. I've used only teams which haven't had any managerial changes\
+            I have used data for some EPL teams from the 2019/20 season until March 2020.\
+            I've used only teams which haven't had any managerial changes\
             during the season because a consistent strategy over the whole season\
-            is easier to grasp than a mix of two or more stategies.\
+            is easier to capture than a mix of two or more stategies.\
+            I've calculated xPo only for the top 7 teams as of now but I plan\
+            to add the remaining teams over the next few days.\
             "
         )
 
@@ -2156,7 +2160,7 @@
                 // .append('div')
                 .append("p").text(
                     "\
-                    xPo for shots is the same as the xG for a shot, i.e. the probability\
+                    xPo for shots is the probability\
                     of scoring if one were to shoot from that area of the pitch.\
                     The plot on the left below is the xPo for shots.\
                     The brigher it is, the more likely it is that a shot from there will\
@@ -2185,12 +2189,13 @@
             d3.select("#" + cContentPanelId).append("p")
                 .text(
                     "\
-                    For instance, Liverpool seem to have a relatively high\
-                    xPo for shots from just outside the box,\
-                    from the left of the goal but it looks like they\
-                    haven't scored too many goals from there, probably\
-                    because they don't shoot\
-                    from outside the box that often.\
+                    For instance, Liverpool seem to have two spots of relatively\
+                    high total xPo contribution, one from near the penalty spot,\
+                    and one from a little to the left of the penalty spot. The\
+                    xPo from those areas don't look as relateively high compared\
+                    to other areas around it. This means that Liverpool have a\
+                    tendency to shoot from those two areas far more than than\
+                    other areas around it.\
                     "
                 )
                 .attr('class','TeamSpecific Liverpool_For_Team')
@@ -2250,6 +2255,17 @@
                 )
                 .attr('class','TeamSpecific Liverpool_For_Team')
 
+            d3.select("#" + cContentPanelId).append("p")
+                .text(
+                    "\
+                    There are also some patterns emerging with some parts of the\
+                    pitch looking like high overall contributors. Some sort of\
+                    overall organisation is emerging to which areas of the pitch\
+                    Liverpool usually pass from on their way to scoring.\
+                    "
+                )
+                .attr('class','TeamSpecific Liverpool_For_Team')
+
         }
 
 
@@ -2280,9 +2296,9 @@
                     In contrast to passes, there are areas all over\
                     the pitch that have a relatively high xPo but\
                     the cumulative xPo generated is not that high.\
-                    Runs are likely actions that promise high rewards\
+                    Runs are, therefore, likely actions that promise high rewards\
                     every time they happen but don't happen that often\
-                    to be a significantly high contributor to the team's\
+                    to be a significantly high contributor to Liverpool's\
                     total generated xPo.\
                     "
                 )
@@ -2305,18 +2321,19 @@
             d3.select("#" + cContentPanelId).append("p").text(
                 "\
                 Now that we have these three sets of numbers, we can\
-                effectively evaluate a combined xPo for any of those three\
+                effectively evaluate a combined xPo for all of those three\
                 actions anywhere on the pitch.\
                 "
             )
 
             d3.select("#" + cContentPanelId).append("p").text(
                 "\
-                These two plots below now incorporate all the shots, passes, and runs from that\
-                resepctive area on the pitch. On the left is an estimate of the typical xPo\
-                a team is likely to generate when they have the ball in a particular part of the pitch.\
-                The plot on the right indicates how much total xPo the team has generated\
-                from having the ball in a particular part of the pitch.\
+                As before, on the left is an estimate of the typical xPo a team\
+                has when they have the ball in a particular part of the pitch.\
+                However, it now considers the possibility that any of the three\
+                events, shot, runs, or passes, could happen from that area.\
+                Similarly, the plot on the right indicates how much total xPo the team has\
+                generated from having the ball in a particular part of the pitch.\
                 "
             )
 
@@ -2328,15 +2345,18 @@
             
             d3.select("#" + cContentPanelId).append("p")
                 .text(
-                    "The contours are a little blurry but in terms of the overall\
-                    contributions we can make out some patterns. We can sort of see\
-                    three quadrilaterals, one just behind the centre circle\
-                    and two just ahead of the centre line on both sides of the pitch.\
+                    "\
+                    Higher XPo regions, as expected, are primarily near the goals.\
+                    In terms of the overall contributions\
+                    though, we can make out some patterns. We can sort of see\
+                    three regions, one just behind, on both sides of the centre\
+                    circle and two just ahead of the centre line on both wings.\
                     Then there is one spot halfway between the centre circle\
                     and the box, one bright spot in the box, another bright\
-                    box high up on the left, and one slightly dull spot high up\
-                    on the right. This figure summarises Liveprool's attacking\
-                    strategy in one figure.\
+                    box on the left edge of the box, and one slightly dull spot\
+                    on the right edge of the box. And then the corners.\
+                    This figure summarises Liveprool's attacking returns from\
+                    various areas of the pitch.\
                     "
                 )
                 .attr('class','TeamSpecific Liverpool_For_Team')
@@ -2364,12 +2384,24 @@
             d3.select("#" + cContentPanelId).append("p").text(
                 "\
                 This below is an interactive visualisation to help\
-                you unearth more patterns in the xPo numbers. You can\
-                move your cursor around on the two top-left plots\
+                you unearth more patterns in the xPo numbers. It is quite data\
+                heavy and might be a liiiiittle slow as a result.\
+                "
+             )
+
+            var InteractiveVizBullets = [
+                "\
+                You can\
+                move your cursor around on the two top-left plots,\
+                the ones capturing the overall xPo across events\
                 to indicate the area of the pitch you're\
                 interested in exploring more.\
-                The plot with shots is static, since the shot xPo\
-                is just a function of the start coordinates. The\
+                ",
+                "\
+                The plot with shots, on the bottom right, is static since the\
+                shot xPo is just a function of the start coordinates.\
+                ",
+                "The\
                 xPo for passes and runs are a function of both the start\
                 and end coordinates though. When you hover over an area,\
                 the visualisation marks that as the start area and\
@@ -2377,7 +2409,17 @@
                 for xPo for passes or runs ending in various areas of\
                 the pitch.\
                 "
-            )
+            ]
+            
+
+            var ul = d3.select("#" + cContentPanelId).append('ul');
+
+            ul.selectAll('li')
+                .data(InteractiveVizBullets)
+                .enter()
+                .append('li')
+                .html(String);
+             
 
             d3.select("#" + cContentPanelId).append("p").text(
                 "Hovering over an area will update the pass and run plots.\
