@@ -243,7 +243,8 @@
         between the end coordinate of
         a pass and the start coordinate of the next pass. There are likely some
         edge cases that will sneak though and look funny but I'm working on
-        making this better.
+        making this better too. A large proportion of the data is still correct
+        though so I'm still letting this out in the wild anyway.
     </p>
     
     <p>
@@ -459,11 +460,12 @@
                 left: 12
             },
             paintColor: "#FFFFFF",
-            grassColor: "#000000"
-            // grassColor: "#CCCCCC",
+            // grassColor: "#000000"
+            grassColor: "#CCCCCC",
         };
 
-        zeroColour = pitch.grassColor
+        zeroColour = "#000000"
+        // zeroColour = pitch.grassColor
 
         colorPalette = [
             // '#b3e2cd',
