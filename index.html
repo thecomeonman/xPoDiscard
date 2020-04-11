@@ -107,11 +107,19 @@
 
 
 <button class="tablink" onclick="openPage('Intro', this, 'red')" id="defaultOpen">Introduction</button>
-<button class="tablink" onclick="openPage('TeamAttack', this, 'blue')">How Teams Attack</button>
+<button class="tablink" onclick="openPage('setAttack', this, 'blue')">How Teams Attack</button>
 <button class="tablink" onclick="openPage('ModelComparison', this, 'green')">Comparison With Other Models</button>
 <button class="tablink" onclick="openPage('ReachOut', this, 'black')">What Do You Think?</button>
 
 <div id = 'Intro' class="tabContent">
+
+    <p style="font-size:0.8em">
+        <i>
+        Update on 11th April 2020: There was a calculation error which caused passes 
+        and moves to not get as much weightage in the final numbers. It's been
+        fixed now.
+        </i>
+    <p>
 
     <h3>What is xPo?</h3>
 
@@ -273,9 +281,9 @@
 
 </div>
 
-<div id = 'TeamAttack' class="tabContent">
-<div id = 'TeamSelection'></div>
-<div id = 'TeamAttackContent'></div>
+<div id = 'setAttack' class="tabContent">
+<div id = 'setSelection'></div>
+<div id = 'AttackContent'></div>
 </div>
 
 <div id = 'ModelComparison' class="tabContent">
@@ -288,6 +296,15 @@
 
     
     <h3>xG chain</h3>
+
+    <p>
+        The motive behind this model is to split credit for goals / shots 
+        amongst all the participants involved in the play leading up to it, so 
+        in a way it's not doing exactly the same thing as xPo. However, adding
+        these up across actions or matches, etc. has been an oft used metric
+        to establish the overall credit players should get towards their team's
+        goals.
+    </p>
 
     <p>
         This takes the xG of the shot and splits it up equally between all
@@ -318,6 +335,8 @@
             block in the grid. A small movement
             on the pitch may move you across blocks and change your xT value 
             unrealistically but your xPo value should not get affected so much.
+            Karun mentioned that this can be worked around by interpolating 
+            the xT values for coordinates that fall between grids.
         </li>
     </ul>
 
@@ -331,14 +350,13 @@
             xPo only cares for the action and the end outcome of that play and
             assumes that by averaging over all the plays the ensuing actions
             get incorporated somehow in the xPo value. xT explicitly considers
-            possible sequences of play going through various parts of the pitch. 
+            possible sequences of play going through various parts of the pitch.
         </li>
         
         <li>
             xPo only gives credit when a shot happened at the end of the play
             whereas xT also gives credit even for situations where they got into
             a possible shooting position even if they didn't actually shoot.
-            This is something I'm going to try and incorporate in v2.
         </li>
     </ul>
 
@@ -354,6 +372,13 @@
             together.
         </li>
     </ul>
+
+
+    <h3>VAEP</h3>
+
+    <p>
+        A model 
+    </p>
 
 </div>
 
@@ -407,28 +432,28 @@
     // constants
     if ( true ) {
 
-        allTeamNames = [
-            'Chelsea',
-            'Leicester',
-            'Liverpool',
-            'Manchester City',
-            'Manchester United',
-            'Sheffield United',
-            'Wolves'
+        allSetNames = [
+            'Chelsea, EPL, 2019-20',
+            'Leicester, EPL, 2019-20',
+            'Liverpool, EPL, 2019-20',
+            'Manchester City, EPL, 2019-20',
+            'Manchester United, EPL, 2019-20',
+            'Sheffield United, EPL, 2019-20',
+            'Wolves, EPL, 2019-20'
         ]
 
-        allTeamCodes = [
-            'Chelsea_For_Team',
-            'Leicester_For_Team',
-            'Liverpool_For_Team',
-            'ManCity_For_Team',
-            'ManUtd_For_Team',
-            'SheffieldUtd_For_Team',
-            'Wolves_For_Team'
+        allSetCodes = [
+            'Chelsea_For_Scoring_Team',
+            'Leicester_For_Scoring_Team',
+            'Liverpool_For_Scoring_Team',
+            'ManCity_For_Scoring_Team',
+            'ManUtd_For_Scoring_Team',
+            'SheffieldUtd_For_Scoring_Team',
+            'Wolves_For_Scoring_Team'
         ]
 
-        selectedTeamCode = 'Liverpool_For_Team'
-
+        selectedSetCode = 'Liverpool_For_Scoring_Team'
+        selectedSetName = allSetNames[allSetCodes.indexOf(selectedSetCode)]
 
         nBlockWidth = 2
 
@@ -695,13 +720,14 @@
             pitchElement,
             titleText,
             xScale,
-            nBlockWidth
+            nBlockWidth,
+            selectedSetName
         ) {
 
             pitchElement
                 .append('text')
                 .attr('class', 'plotTitle')
-                .text(titleText)
+                .text(selectedSetName + ": " + titleText)
                 .attr("alignment-baseline", "bottom")
                 .attr('x', 0)
                 .attr('y', -xScale(1 * nBlockWidth))
@@ -939,7 +965,7 @@
                     "color", 
                     function(d) { 
                         if (cumulative == true) {
-                            return colorScales["myGranularNonShotGoalsColor"](d.WeightedProbabiliticGoals)
+                            return colorScales["myGranularNonShotGoalsColor"](d.WeightedExpectedGoals)
                         } else {
                             return colorScales["myGranularNonShotProbabilityColor"](d.GoalProbability)
                         }
@@ -949,7 +975,7 @@
                     "fill", 
                     function(d) { 
                         if (cumulative == true) {
-                            return colorScales["myGranularNonShotGoalsColor"](d.WeightedProbabiliticGoals)
+                            return colorScales["myGranularNonShotGoalsColor"](d.WeightedExpectedGoals)
                         } else {
                             return colorScales["myGranularNonShotProbabilityColor"](d.GoalProbability)
                         }
@@ -1011,7 +1037,8 @@
         fCreatePanel0 = function(
             cContentPanelId,
             dataOriginProbabilitiesShotFor,
-            colorScales
+            colorScales,
+            selectedSetName
         ) {
 
             var svgPanel0 = d3.select("#" + cContentPanelId).append("svg")
@@ -1044,7 +1071,8 @@
                 pitchElementShotPanel0,
                 'xPo',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
     
             // addPlotLegend( 
@@ -1095,7 +1123,8 @@
                 pitchElementShotCumulativePanel0,
                 'Total xPo generated',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
@@ -1122,7 +1151,7 @@
                 yScale2,
                 nBlockWidth,
                 colorScales['myShotGoalsColor'],
-                'WeightedProbabiliticGoals'
+                'WeightedExpectedGoals'
             )
 
             pitchElementShotMarkingsPanel0.moveToFront()
@@ -1133,7 +1162,8 @@
         fCreatePanel4 = function(
             cContentPanelId,
             dataOriginProbabilitiesPassFor,
-            colorScales
+            colorScales,
+            selectedSetName
         ) {
                 
             var svgPanel4 = d3.select("#" + cContentPanelId).append("svg")
@@ -1158,7 +1188,8 @@
                 pitchElementPassPanel4,
                 'xPo from passes',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
@@ -1198,7 +1229,8 @@
                 pitchElementPassCumulativePanel4,
                 'Total xPo generated from passes',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
@@ -1224,7 +1256,7 @@
                 yScale2,
                 nBlockWidth,
                 colorScales['myNonShotGoalsColor'],
-                'WeightedProbabiliticGoals'
+                'WeightedExpectedGoals'
             )
                 
             pitchElementMarkingsOriginCumulativePanel4.moveToFront()
@@ -1235,8 +1267,9 @@
                             
         fCreatePanel5 = function(
             cContentPanelId,
-            dataOriginProbabilitiesMoveFor,
-            colorScales
+            dataOriginProbabilitiesRunFor,
+            colorScales,
+            selectedSetName
         ) {        
 
             var svgPanel5 = d3.select("#" + cContentPanelId).append("svg")
@@ -1254,24 +1287,25 @@
                 // )
                 ;
 
-            var pitchElementMovePanel5 = svgPanel5.append("g")
+            var pitchElementRunPanel5 = svgPanel5.append("g")
                 .attr("transform", "translate(" +xScale2(pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")")
 
             
             addPlotTitle(
-                pitchElementMovePanel5,
+                pitchElementRunPanel5,
                 'xPo from runs',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
 
             addPitchColor(
-                pitchElementMovePanel5,
+                pitchElementRunPanel5,
                 xScale2
             )
                 
-            var pitchElementMarkingsOriginPanel5 = pitchElementMovePanel5
+            var pitchElementMarkingsOriginPanel5 = pitchElementRunPanel5
                 .append("g")
                 .attr('class','pitchMarkings');
 
@@ -1281,8 +1315,8 @@
             )  
 
             addPitchData(
-                pitchElementMovePanel5,
-                dataOriginProbabilitiesMoveFor,
+                pitchElementRunPanel5,
+                dataOriginProbabilitiesRunFor,
                 'Origin',
                 'OriginProbabilities',
                 xScale2,
@@ -1295,22 +1329,23 @@
             pitchElementMarkingsOriginPanel5.moveToFront()
 
 
-            var pitchElementMoveCumulativePanel5 = svgPanel5.append("g")
+            var pitchElementRunCumulativePanel5 = svgPanel5.append("g")
                 .attr("transform", "translate(" +xScale2(pitch.frame.width + pitch.padding.left) + "," + xScale2(pitch.padding.top) + ")")
 
             addPlotTitle(
-                pitchElementMoveCumulativePanel5,
+                pitchElementRunCumulativePanel5,
                 'Total xPo generated from runs',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
-                pitchElementMoveCumulativePanel5,
+                pitchElementRunCumulativePanel5,
                 xScale2
             )
                 
-            var pitchElementMarkingsOriginCumulativePanel5 = pitchElementMoveCumulativePanel5
+            var pitchElementMarkingsOriginCumulativePanel5 = pitchElementRunCumulativePanel5
                 .append("g")
                 .attr('class','pitchMarkings');
 
@@ -1320,15 +1355,15 @@
             )
 
             addPitchData(
-                pitchElementMoveCumulativePanel5,
-                dataOriginProbabilitiesMoveFor,
+                pitchElementRunCumulativePanel5,
+                dataOriginProbabilitiesRunFor,
                 'Origin',
                 'OriginProbabilitiesCumulative',
                 xScale2,
                 yScale2,
                 nBlockWidth,
                 colorScales['myNonShotGoalsColor'],
-                'WeightedProbabiliticGoals'
+                'WeightedExpectedGoals'
             ) 
 
                 
@@ -1343,7 +1378,8 @@
         fCreatePanel1 = function(
             cContentPanelId,
             dataOriginProbabilitiesFor,
-            colorScales
+            colorScales,
+            selectedSetName
         ) {
             
 
@@ -1369,7 +1405,8 @@
                 pitchElementOriginPanel1,
                 'xPo overall',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
     
             addPitchColor(
@@ -1408,7 +1445,8 @@
                 pitchElementOriginCumulativePanel1,
                 'Total xPo generated overall',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
     
             addPitchColor(
@@ -1434,7 +1472,7 @@
                 yScale2,
                 nBlockWidth,
                 colorScales['myGoalsColor'],
-                'WeightedProbabiliticGoals'
+                'WeightedExpectedGoals'
             )
 
             pitchElementMarkingsOriginCumulativePanel1.moveToFront()
@@ -1448,9 +1486,10 @@
             dataOriginProbabilitiesFor,
             dataOriginProbabilitiesShotFor,
             dataOriginProbabilitiesPassFor,
-            dataOriginProbabilitiesMoveFor,
+            dataOriginProbabilitiesRunFor,
             colorScales,
-            teamCode
+            setCode,
+            selectedSetName
         ) {
 
             Panel3Click = {}
@@ -1487,7 +1526,8 @@
                 pitchElementOriginPanel3,
                 'xPo overall',
                 xScale4,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
@@ -1530,7 +1570,7 @@
                     if ( Panel3Click['x'] == null ) {
 
                         updatePanel3ForInterations(
-                            teamCode,
+                            setCode,
                             d.x,
                             d.y,
                             pitchElementOriginPanel3,
@@ -1539,8 +1579,8 @@
                             pitchElementShotCumulativePanel3,
                             pitchElementPassPanel3,
                             pitchElementPassCumulativePanel3,
-                            pitchElementMovePanel3,
-                            pitchElementMoveCumulativePanel3,
+                            pitchElementRunPanel3,
+                            pitchElementRunCumulativePanel3,
                             colorScales,
                             cContentPanelId
                         )
@@ -1554,7 +1594,7 @@
                     Panel3Click['y'] = d.y
                     
                     updatePanel3ForInterations(
-                        teamCode,
+                        setCode,
                         d.x,
                         d.y,
                         pitchElementOriginPanel3,
@@ -1563,8 +1603,8 @@
                         pitchElementShotCumulativePanel3,
                         pitchElementPassPanel3,
                         pitchElementPassCumulativePanel3,
-                        pitchElementMovePanel3,
-                        pitchElementMoveCumulativePanel3,
+                        pitchElementRunPanel3,
+                        pitchElementRunCumulativePanel3,
                         colorScales,
                         cContentPanelId
                     )
@@ -1588,7 +1628,8 @@
                 pitchElementOriginCumulativePanel3,
                 'Total xPo generated overall',
                 xScale4,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
@@ -1622,8 +1663,8 @@
                 // .attr("y", function(d) { return xScale4(d.y) - xScale4(nBlockWidth/2) })
                 // .attr("width", xScale4(nBlockWidth) )
                 // .attr("height", xScale4(nBlockWidth) )
-                .style("color", function(d) { return colorScales['myGoalsColor'](d.WeightedProbabiliticGoals)} )
-                .style("fill", function(d) { return colorScales['myGoalsColor'](d.WeightedProbabiliticGoals)} )
+                .style("color", function(d) { return colorScales['myGoalsColor'](d.WeightedExpectedGoals)} )
+                .style("fill", function(d) { return colorScales['myGoalsColor'](d.WeightedExpectedGoals)} )
                 .style("fill-opacity", 1 )
                 .style("stroke-opacity", 1 )
                 .on('mouseover', function ( d ) {
@@ -1631,7 +1672,7 @@
                     if ( Panel3Click['x'] == null ) {
 
                         updatePanel3ForInterations(
-                            teamCode,
+                            setCode,
                             d.x,
                             d.y,
                             pitchElementOriginPanel3,
@@ -1640,8 +1681,8 @@
                             pitchElementShotCumulativePanel3,
                             pitchElementPassPanel3,
                             pitchElementPassCumulativePanel3,
-                            pitchElementMovePanel3,
-                            pitchElementMoveCumulativePanel3,
+                            pitchElementRunPanel3,
+                            pitchElementRunCumulativePanel3,
                             colorScales,
                             cContentPanelId
                         )
@@ -1655,7 +1696,7 @@
                     Panel3Click['y'] = d.y
                     
                     updatePanel3ForInterations(
-                        teamCode,
+                        setCode,
                         d.x,
                         d.y,
                         pitchElementOriginPanel3,
@@ -1664,8 +1705,8 @@
                         pitchElementShotCumulativePanel3,
                         pitchElementPassPanel3,
                         pitchElementPassCumulativePanel3,
-                        pitchElementMovePanel3,
-                        pitchElementMoveCumulativePanel3,
+                        pitchElementRunPanel3,
+                        pitchElementRunCumulativePanel3,
                         colorScales,
                         cContentPanelId
                     )
@@ -1687,39 +1728,40 @@
 
 
 
-            var pitchElementMovePanel3 = svg.append("g")
-                .attr('id','pitchElementMovePanel3')
+            var pitchElementRunPanel3 = svg.append("g")
+                .attr('id','pitchElementRunPanel3')
                 .attr(
                     "transform", 
                     "translate(" + ( xScale2(pitch.padding.left) + xScale4(pitch.frame.width) ) + "," + xScale4(pitch.padding.top) + ")"               
                 )
 
             addPlotTitle(
-                pitchElementMovePanel3,
+                pitchElementRunPanel3,
                 'Running from there to here, xPo',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
 
             addPitchColor(
-                pitchElementMovePanel3,
+                pitchElementRunPanel3,
                 xScale2
             )
 
-            var pitchElementMoveMarkingsPanel3 = pitchElementMovePanel3
+            var pitchElementRunMarkingsPanel3 = pitchElementRunPanel3
                 .append("g")
                 .attr('class','pitchMarkings');
 
             addPitchOutlines(
-                pitchElementMoveMarkingsPanel3,
+                pitchElementRunMarkingsPanel3,
                 xScale2
             )
                 
 
 
-            var pitchElementMoveCumulativePanel3 = svg.append("g")
-                .attr('id','pitchElementMoveCumulativePanel3')
+            var pitchElementRunCumulativePanel3 = svg.append("g")
+                .attr('id','pitchElementRunCumulativePanel3')
                 .attr(
                     "transform", 
                     "translate(" + ( xScale2(pitch.padding.left) + xScale4(pitch.frame.width) ) + "," + ( xScale2(pitch.frame.length + pitch.padding.top) ) + ")"               
@@ -1727,24 +1769,25 @@
 
                 
             addPlotTitle(
-                pitchElementMoveCumulativePanel3,
+                pitchElementRunCumulativePanel3,
                 'Running from there to here, total xPo generated',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
 
             addPitchColor(
-                pitchElementMoveCumulativePanel3,
+                pitchElementRunCumulativePanel3,
                 xScale2
             )
 
-            var pitchElementMoveCumulativeMarkingsPanel3 = pitchElementMoveCumulativePanel3
+            var pitchElementRunCumulativeMarkingsPanel3 = pitchElementRunCumulativePanel3
                 .append("g")
                 .attr('class','pitchMarkings');
 
             addPitchOutlines(
-                pitchElementMoveCumulativeMarkingsPanel3,
+                pitchElementRunCumulativeMarkingsPanel3,
                 xScale2
             )
                 
@@ -1765,7 +1808,8 @@
                 pitchElementPassPanel3,
                 'Passing from there to here, xPo',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
@@ -1794,7 +1838,8 @@
                 pitchElementPassCumulativePanel3,
                 'Passing from there to here, total xPo generated',
                 xScale2,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
@@ -1837,7 +1882,8 @@
                 pitchElementShotPanel3,
                 'xG',
                 xScale4,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
@@ -1890,7 +1936,8 @@
                 pitchElementShotCumulativePanel3,
                 'Total xPo generated',
                 xScale4,
-                nBlockWidth
+                nBlockWidth,
+                selectedSetName
             )
 
             addPitchColor(
@@ -1924,8 +1971,8 @@
                 // .attr("y", function(d) { return xScale4(d.y) - xScale4(nBlockWidth/2) })
                 // .attr("width", xScale4(nBlockWidth) )
                 // .attr("height", xScale4(nBlockWidth) )
-                .style("color", function(d) { return colorScales['myShotGoalsColor'](d.WeightedProbabiliticGoals)} )
-                .style("fill", function(d) { return colorScales['myShotGoalsColor'](d.WeightedProbabiliticGoals)} )
+                .style("color", function(d) { return colorScales['myShotGoalsColor'](d.WeightedExpectedGoals)} )
+                .style("fill", function(d) { return colorScales['myShotGoalsColor'](d.WeightedExpectedGoals)} )
                 .style("fill-opacity", 1 )
                 .style("stroke-opacity", 1 )
 
@@ -1940,7 +1987,7 @@
             addHighlightObject(
                 pitchElementOriginCumulativePanel3,
                 dataOriginProbabilitiesFor,
-                'Move'
+                'Run'
             )
 
             addHighlightObject(
@@ -1950,9 +1997,9 @@
             )
 
             addHighlightObject(
-                pitchElementMovePanel3,
+                pitchElementRunPanel3,
                 dataOriginProbabilitiesFor,
-                'Move'
+                'Run'
             )
 
             addHighlightObject(
@@ -1962,9 +2009,9 @@
             )
 
             addHighlightObject(
-                pitchElementMoveCumulativePanel3,
+                pitchElementRunCumulativePanel3,
                 dataOriginProbabilitiesFor,
-                'Move'
+                'Run'
             )
 
             addHighlightObject(
@@ -1988,7 +2035,7 @@
         }
 
         updatePanel3ForInterations = function(
-            teamCode,
+            setCode,
             x,
             y,
             pitchElementOriginPanel3,
@@ -1997,8 +2044,8 @@
             pitchElementShotCumulativePanel3,
             pitchElementPassPanel3,
             pitchElementPassCumulativePanel3,
-            pitchElementMovePanel3,
-            pitchElementMoveCumulativePanel3,
+            pitchElementRunPanel3,
+            pitchElementRunCumulativePanel3,
             colorScales,
             cContentPanelId
         ) {
@@ -2055,7 +2102,7 @@
             )
 
             d3.csv(
-                './Data/' + teamCode.replace(/_/g,'/') + "/DataGranular/x" + x + "_y" + y + ".csv", 
+                './Data/' + setCode.replace(/_/g,'/') + "/DataGranular/x" + x + "_y" + y + ".csv", 
                 function(dataGranular) {
                     
                     updateBallMovementHeatmap(
@@ -2078,19 +2125,19 @@
                     )
 
                     updateBallMovementHeatmap(
-                        pitchElementMovePanel3,
+                        pitchElementRunPanel3,
                         x,
                         y,
-                        'Move',
+                        'Run',
                         dataGranular,
                         cumulative = false,
                         colorScales
                     )
-                    pitchElementMovePanel3.selectAll('.pitchMarkings').moveToFront();
+                    pitchElementRunPanel3.selectAll('.pitchMarkings').moveToFront();
 
 
                     highlightHeatmapCoordinate(
-                        pitchElementMovePanel3,
+                        pitchElementRunPanel3,
                         x,
                         y,
                         xScale2,
@@ -2117,19 +2164,19 @@
                     )
                     
                     updateBallMovementHeatmap(
-                        pitchElementMoveCumulativePanel3,
+                        pitchElementRunCumulativePanel3,
                         x,
                         y,
-                        'Move',
+                        'Run',
                         dataGranular,
                         cumulative = true,
                         colorScales
                     )
-                    pitchElementMoveCumulativePanel3.selectAll('.pitchMarkings').moveToFront();
+                    pitchElementRunCumulativePanel3.selectAll('.pitchMarkings').moveToFront();
                         
 
                     highlightHeatmapCoordinate(
-                        pitchElementMoveCumulativePanel3,
+                        pitchElementRunCumulativePanel3,
                         x,
                         y,
                         xScale2,
@@ -2150,16 +2197,16 @@
 
     }
 
-    cContentPanelId = 'TeamAttackContent'
-    cTeamSelectionPanelId = 'TeamSelection'
+    cContentPanelId = 'AttackContent'
+    setSelectionPanelId = 'setSelection'
 
-    d3.select("#" + cTeamSelectionPanelId).append("h3").text(
+    d3.select("#" + setSelectionPanelId).append("h3").text(
         "\
-        Select a Team\
+        Select a team\
         "
     )
 
-    d3.select("#" + cTeamSelectionPanelId)
+    d3.select("#" + setSelectionPanelId)
         .append("p").text(
             "\
             I have used data for some EPL teams from the 2019/20 season until March 2020.\
@@ -2171,7 +2218,7 @@
             "
         )
 
-        d3.select("#" + cTeamSelectionPanelId)
+        d3.select("#" + setSelectionPanelId)
         .append("p").text(
             "\
             There are extra comments for Liverpool which may help you understand\
@@ -2180,33 +2227,37 @@
             "
         )
 
-    var dropdownTeam = d3.select("#" + cTeamSelectionPanelId)
+    var dropdownSet = d3.select("#" + setSelectionPanelId)
         .append("select")
-        .attr("id","TeamSelection")
+        .attr("id","setSelection")
 
 
-    dropdownTeam.selectAll("option")
-        .data(allTeamCodes)
+    dropdownSet.selectAll("option")
+        .data(allSetCodes)
         .enter().append("option")
         .attr("value", function (d) { return d; })
-        .text(function (d, i) { return allTeamNames[i]; })
-        .property("selected", function(d){ return d === selectedTeamCode; })
+        .text(function (d, i) { return allSetNames[i]; })
+        .property("selected", function(d){ return d === selectedSetCode; })
 
 
-        dropdownTeam
+        dropdownSet
         .on("change", function(d) { 
 
-            dropdownTeamChange(
-                d3.select(this).property("value"),
-                cContentPanelId
+            selectedSetCode = d3.select(this).property("value")
+
+            dropdownSetChange(
+                selectedSetCode,
+                cContentPanelId,
+                allSetNames[allSetCodes.indexOf(selectedSetCode)]
             )
 
         }
     );
 
-    dropdownTeamChange = function(
-        selectedTeamCode,
-        cContentPanelId
+    dropdownSetChange = function(
+        selectedSetCode,
+        cContentPanelId,
+        selectedSetName
     ) {
 
         d3.selectAll('.plotTitle').text('Updating')
@@ -2216,21 +2267,22 @@
         // d3.select("#" + cContentPanelId).selectAll("*").remove()
 
         // createPanelParent(
-        //     selectedTeamCode,
+        //     selectedSetCode,
         //     cContentPanelId
         // )
 
 
         updatePanelParentWithData(
-            selectedTeamCode,
+            selectedSetCode,
             cContentPanelId,
-            cWhatScaleToUse
+            cWhatScaleToUse,
+            selectedSetName
         )
         
     }
 
     createPanelParent = function(
-        teamCode,
+        setCode,
         cContentPanelId
     ) {
 
@@ -2288,7 +2340,7 @@
                     other areas around it.\
                     "
                 )
-                .attr('class','TeamSpecific Liverpool_For_Team')
+                .attr('class','setSpecificContent Liverpool_For_Scoring_Team')
 
             d3.select("#" + cContentPanelId).append("p")
                 .text(
@@ -2297,7 +2349,7 @@
                     red spot near the half line.\
                     "
                 )
-                .attr('class','TeamSpecific ManUtd_For_Team')
+                .attr('class','setSpecificContent ManUtd_For_Team')
 
             d3.select("#" + cContentPanelId).append("p")
                 .text(
@@ -2352,7 +2404,7 @@
                     returns are quite decent.\
                     "
                 )
-                .attr('class','TeamSpecific Liverpool_For_Team')
+                .attr('class','setSpecificContent Liverpool_For_Scoring_Team')
 
             d3.select("#" + cContentPanelId).append("p")
                 .text(
@@ -2363,7 +2415,7 @@
                     Liverpool usually pass from on their way to scoring.\
                     "
                 )
-                .attr('class','TeamSpecific Liverpool_For_Team')
+                .attr('class','setSpecificContent Liverpool_For_Scoring_Team')
 
         }
 
@@ -2401,7 +2453,7 @@
                     total generated xPo.\
                     "
                 )
-                .attr('class','TeamSpecific Liverpool_For_Team')
+                .attr('class','setSpecificContent Liverpool_For_Scoring_Team')
 
 
         }
@@ -2445,20 +2497,21 @@
             d3.select("#" + cContentPanelId).append("p")
                 .text(
                     "\
-                    Higher XPo regions, as expected, are primarily near the goals.\
+                    Higher XPo regions, as expected, are primarily near the goal.\
                     In terms of the overall contributions\
                     though, we can make out some patterns. We can sort of see\
-                    three regions, one just behind, on both sides of the centre\
-                    circle and two just ahead of the centre line on both wings.\
-                    Then there is one spot halfway between the centre circle\
-                    and the box, one bright spot in the box, another bright\
+                    three regions, one just behind, around the centre\
+                    circle and two just ahead of the centre line on both sides\
+                    of the centre circle.\
+                    There is one spot halfway between the centre circle\
+                    and the box, another bright\
                     box on the left edge of the box, and one slightly dull spot\
                     on the right edge of the box. And then the corners.\
                     This figure summarises Liveprool's attacking returns from\
                     various areas of the pitch.\
                     "
                 )
-                .attr('class','TeamSpecific Liverpool_For_Team')
+                .attr('class','setSpecificContent Liverpool_For_Scoring_Team')
 
         }
 
@@ -2548,13 +2601,14 @@
     }
 
     updatePanelParentWithData = function(
-        teamCode,
+        setCode,
         cContentPanelId,
-        typeOfDataset
+        typeOfDataset,
+        selectedSetName
     ) {
 
         d3.select('#' + cContentPanelId)
-            .selectAll('.TeamSpecific')
+            .selectAll('.setSpecificContent')
             .style(
                 'display',
                 'none'
@@ -2562,20 +2616,20 @@
 
 
         d3.select('#' + cContentPanelId)
-            .selectAll('.TeamSpecific.' + teamCode)
+            .selectAll('.setSpecificContent.' + setCode)
             .style(
                 'display',
                 'block'
             )
 
 
-        d3.csv('./Data/' + teamCode.replace(/_/g,'/') + '/OriginProbabilities.csv', function(dataOriginProbabilitiesFor) {
+        d3.csv('./Data/' + setCode.replace(/_/g,'/') + '/OriginProbabilities.csv', function(dataOriginProbabilitiesFor) {
 
-            d3.csv('./Data/' + teamCode.replace(/_/g,'/') + '/OriginProbabilitiesPass.csv', function(dataOriginProbabilitiesPassFor) {
+            d3.csv('./Data/' + setCode.replace(/_/g,'/') + '/OriginProbabilitiesPass.csv', function(dataOriginProbabilitiesPassFor) {
 
-                d3.csv('./Data/' + teamCode.replace(/_/g,'/') + '/OriginProbabilitiesMove.csv', function(dataOriginProbabilitiesMoveFor) {
+                d3.csv('./Data/' + setCode.replace(/_/g,'/') + '/OriginProbabilitiesRun.csv', function(dataOriginProbabilitiesRunFor) {
 
-                    d3.csv('./Data/' + teamCode.replace(/_/g,'/') + '/OriginProbabilitiesShot.csv', function(dataOriginProbabilitiesShotFor) {
+                    d3.csv('./Data/' + setCode.replace(/_/g,'/') + '/OriginProbabilitiesShot.csv', function(dataOriginProbabilitiesShotFor) {
                         
                         d3.csv('./Data/' + typeOfDataset + 'OriginScale.csv', function(dataOriginScale) {
 
@@ -2614,18 +2668,18 @@
                                         .domain(
                                             [
                                                 0,
-                                                dataGranularScale[0]['WeightedProbabiliticGoals']
+                                                dataGranularScale[0]['WeightedExpectedGoals']
                                             ]
                                         )
 
                                     nMaxShotProbability = d3.max(
                                         [
                                             // d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.GoalProbability } ),
-                                            // d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.GoalProbability } ),
+                                            // d3.max(dataOriginProbabilitiesRunFor, function (d) { return d.GoalProbability } ),
                                             d3.max(dataOriginProbabilitiesShotFor, function (d) { return d.GoalProbability } )
                                             // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.GoalProbability } ),
                                             // d3.max(dataOriginProbabilitiesShotAgainst, function (d) { return d.GoalProbability } ),
-                                            // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.GoalProbability } )
+                                            // d3.max(dataOriginProbabilitiesRunAgainst, function (d) { return d.GoalProbability } )
                                         ]
                                     )
                                 
@@ -2655,12 +2709,12 @@
                                     // Build color scale
                                     var nMaxShotGoals = d3.max(
                                         [
-                                            // d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.WeightedProbabiliticGoals } ),
-                                            // d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.WeightedProbabiliticGoals } ),
-                                            d3.max(dataOriginProbabilitiesShotFor, function (d) { return d.WeightedProbabiliticGoals } )
-                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
-                                            // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
-                                            // d3.max(dataOriginProbabilitiesShotAgainst, function (d) { return d.WeightedProbabiliticGoals } )
+                                            // d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.WeightedExpectedGoals } ),
+                                            // d3.max(dataOriginProbabilitiesRunFor, function (d) { return d.WeightedExpectedGoals } ),
+                                            d3.max(dataOriginProbabilitiesShotFor, function (d) { return d.WeightedExpectedGoals } )
+                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedExpectedGoals } ),
+                                            // d3.max(dataOriginProbabilitiesRunAgainst, function (d) { return d.WeightedExpectedGoals } ),
+                                            // d3.max(dataOriginProbabilitiesShotAgainst, function (d) { return d.WeightedExpectedGoals } )
                                         ]
                                     )
 
@@ -2681,7 +2735,7 @@
                                                 // nMaxNonShotProbability / 16,
                                                 // nMaxNonShotProbability / 4,
                                                 // nMaxShotGoals
-                                                dataOriginScale[0]['Shot_WeightedProbabiliticGoals']
+                                                dataOriginScale[0]['Shot_WeightedExpectedGoals']
                                             ]
                                         )
                                         // .range(["#ffffff", "#FF0000"])
@@ -2691,9 +2745,9 @@
                                     var nMaxNonShotProbability = d3.max(
                                         [
                                             d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.GoalProbability } ),
-                                            d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.GoalProbability } )
-                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
-                                            // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.WeightedProbabiliticGoals } )
+                                            d3.max(dataOriginProbabilitiesRunFor, function (d) { return d.GoalProbability } )
+                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedExpectedGoals } ),
+                                            // d3.max(dataOriginProbabilitiesRunAgainst, function (d) { return d.WeightedExpectedGoals } )
                                         ]
                                     )
 
@@ -2720,10 +2774,10 @@
                                     // Build color scale
                                     var nMaxNonShotGoals = d3.max(
                                         [
-                                            d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.WeightedProbabiliticGoals } ),
-                                            d3.max(dataOriginProbabilitiesMoveFor, function (d) { return d.WeightedProbabiliticGoals } )
-                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedProbabiliticGoals } ),
-                                            // d3.max(dataOriginProbabilitiesMoveAgainst, function (d) { return d.WeightedProbabiliticGoals } )
+                                            d3.max(dataOriginProbabilitiesPassFor, function (d) { return d.WeightedExpectedGoals } ),
+                                            d3.max(dataOriginProbabilitiesRunFor, function (d) { return d.WeightedExpectedGoals } )
+                                            // d3.max(dataOriginProbabilitiesPassAgainst, function (d) { return d.WeightedExpectedGoals } ),
+                                            // d3.max(dataOriginProbabilitiesRunAgainst, function (d) { return d.WeightedExpectedGoals } )
                                         ]
                                     )
 
@@ -2743,9 +2797,10 @@
                                                 // nMaxNonShotGoals / 16,
                                                 // nMaxNonShotGoals / 4,
                                                 // nMaxNonShotGoals
-                                                dataOriginScale[0]['NonShot_WeightedProbabiliticGoals']
+                                                dataOriginScale[0]['NonShot_WeightedExpectedGoals']
                                             ]
                                         )
+
 
                                     // Build color scale
                                     colorScales['myProbabilityColor'] = d3.scaleLinear()
@@ -2783,11 +2838,11 @@
                                                 0,
                                                 // d3.max(
                                                 //     [
-                                                //         d3.max(dataOriginProbabilitiesFor, function (d) { return d.WeightedProbabiliticGoals } )
-                                                //         // d3.max(dataOriginProbabilitiesAgainst, function (d) { return d.WeightedProbabiliticGoals } )
+                                                //         d3.max(dataOriginProbabilitiesFor, function (d) { return d.WeightedExpectedGoals } )
+                                                //         // d3.max(dataOriginProbabilitiesAgainst, function (d) { return d.WeightedExpectedGoals } )
                                                 //     ]
                                                 // )
-                                                dataOriginScale[0]['_WeightedProbabiliticGoals']
+                                                dataOriginScale[0]['_WeightedExpectedGoals']
                                             ]
                                         )
                                         // .range(["#ffffff", "#FF0000"])
@@ -2798,7 +2853,8 @@
                                     var dropdownScenarioChange = function(
                                         whichScenario,
                                         cContentPanelId,
-                                        dropdownScenarioOptions
+                                        dropdownScenarioOptions,
+                                        selectedSetName
                                     ) {
 
                                         if ( whichScenario == dropdownScenarioOptions[0] ) {
@@ -2812,7 +2868,7 @@
 
 
                                             updatePanel3ForInterations(
-                                                teamCode,                                                
+                                                setCode,                                                
                                                 88,
                                                 36,
                                                 d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
@@ -2821,10 +2877,11 @@
                                                 d3.select('#' + cContentPanelId).select('#pitchElementShotCumulativePanel3'),
                                                 d3.select('#' + cContentPanelId).select('#pitchElementPassPanel3'),
                                                 d3.select('#' + cContentPanelId).select('#pitchElementPassCumulativePanel3'),
-                                                d3.select('#' + cContentPanelId).select('#pitchElementMovePanel3'),
-                                                d3.select('#' + cContentPanelId).select('#pitchElementMoveCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementRunPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementRunCumulativePanel3'),
                                                 colorScales,
-                                                cContentPanelId
+                                                cContentPanelId,
+                                                selectedSetName
                                             )
 
                                             d3
@@ -2832,19 +2889,21 @@
                                                 .select('#ScenarioText')
                                                 .text(
                                                     "\
-                                                    The xG contributed from passing plot is hotter than\
-                                                    xG contributed from running. This means that when Liverpool\
+                                                    The xPo contributed from passing plot is hotter than the\
+                                                    xPo contributed from running. This means that when Liverpool\
                                                     have the ball around the pointer, passing has eventually led to\
-                                                    a larger overall xG than running. Quite a bit of xG has come\
-                                                    from short sideward or diagonally forward passes. However, in terms of xG\
-                                                    per play there are spots towards the left of the box, spots on the left wing,\
-                                                    the left of midfield, and the right wing which are attractive options.\
-                                                    Passes to these spots have not yielded too much xG overall but that is\
-                                                    probably because not too many passes were aimed there. Whenever\
+                                                    more goals than running. Quite a bit of the total xPo has come\
+                                                    from short sideward or diagonally forward passes. However, in terms\
+                                                    of just the xPo itself, \
+                                                    there are spots towards the left of the box, spots on the left wing,\
+                                                    the left of midfield, and a less lucrative area towards the right wing\
+                                                    which are attractive options.\
+                                                    Passes to the later set of spots has not yielded too much xG overall but\
+                                                    that is probably because not too many passes were aimed there. Whenever\
                                                     a pass was indeed made to these areas, a relatively high xG shot usually\
-                                                    followed. Similarly, despite not generating an overall high amount of Xg,\
+                                                    followed. Similarly, despite not generating an overall high amount of xPo,\
                                                     Liverpool do generate a relatively high xG shot often when they run towards\
-                                                    the box or towards the left of the box.\
+                                                    the box slightly to the left.\
                                                     "
                                                 )
 
@@ -2853,7 +2912,7 @@
 
 
                                             updatePanel3ForInterations(
-                                                teamCode,
+                                                setCode,
                                                 36,
                                                 52,
                                                 d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
@@ -2862,10 +2921,11 @@
                                                 d3.select('#' + cContentPanelId).select('#pitchElementShotCumulativePanel3'),
                                                 d3.select('#' + cContentPanelId).select('#pitchElementPassPanel3'),
                                                 d3.select('#' + cContentPanelId).select('#pitchElementPassCumulativePanel3'),
-                                                d3.select('#' + cContentPanelId).select('#pitchElementMovePanel3'),
-                                                d3.select('#' + cContentPanelId).select('#pitchElementMoveCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementRunPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementRunCumulativePanel3'),
                                                 colorScales,
-                                                cContentPanelId
+                                                cContentPanelId,
+                                                selectedSetName
                                             )
 
 
@@ -2879,17 +2939,18 @@
                                                     pass towards the left wing. This means that\
                                                     having the ball around the pointers hasn't eventually\
                                                     results in a lot of overall xG for Liverpool. However, when\
-                                                    the player manages to either run into the midfield area\
-                                                    or get long balls either far up the left wing, near the\
-                                                    right side of the box, or in the box, then there is a\
-                                                    relatively high xG shot is usually generated.\
+                                                    the player manages to either run into the midfield area,\
+                                                    or towards the left of the box, or the player has managed\
+                                                    get long balls either far up the left wing, near the\
+                                                    right side of the box, in the box, or towards the right wing,\
+                                                    near the centre line, then a high xG shot usually follows.\
                                                     "
                                                 )
 
                                         } else if ( whichScenario == dropdownScenarioOptions[3] ) {
 
                                             updatePanel3ForInterations(
-                                                teamCode,
+                                                setCode,
                                                 88,
                                                 8,
                                                 d3.select('#' + cContentPanelId).select('#pitchElementOriginPanel3'),
@@ -2898,10 +2959,11 @@
                                                 d3.select('#' + cContentPanelId).select('#pitchElementShotCumulativePanel3'),
                                                 d3.select('#' + cContentPanelId).select('#pitchElementPassPanel3'),
                                                 d3.select('#' + cContentPanelId).select('#pitchElementPassCumulativePanel3'),
-                                                d3.select('#' + cContentPanelId).select('#pitchElementMovePanel3'),
-                                                d3.select('#' + cContentPanelId).select('#pitchElementMoveCumulativePanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementRunPanel3'),
+                                                d3.select('#' + cContentPanelId).select('#pitchElementRunCumulativePanel3'),
                                                 colorScales,
-                                                cContentPanelId
+                                                cContentPanelId,
+                                                selectedSetName
                                             )
 
                                             d3
@@ -2919,7 +2981,7 @@
                                                     However, in the case of running with the ball, most of\
                                                     their goals have come from runs towards the box too, but\
                                                     the passes that have led to more goals have been either\
-                                                    around the edge of the last third of the pitch, or passes\
+                                                    along the edge of the last third of the pitch, or passes\
                                                     into the box, which are probably crosses.\
                                                     "
                                                 )
@@ -2955,32 +3017,36 @@
                                 fCreatePanel0(
                                     cContentPanelId + "Panel0",
                                     dataOriginProbabilitiesShotFor,
-                                    colorScales
+                                    colorScales,
+                                    selectedSetName
                                 )
 
                                 fCreatePanel4(
                                     cContentPanelId + "Panel4",
                                     dataOriginProbabilitiesPassFor,
-                                    colorScales
+                                    colorScales,
+                                    selectedSetName
                                 )
 
 
                                 fCreatePanel5(
                                     cContentPanelId + "Panel5",
-                                    dataOriginProbabilitiesMoveFor,
-                                    colorScales
+                                    dataOriginProbabilitiesRunFor,
+                                    colorScales,
+                                    selectedSetName
                                 )
 
 
                                 fCreatePanel1(
                                     cContentPanelId + "Panel1",
                                     dataOriginProbabilitiesFor,
-                                    colorScales
+                                    colorScales,
+                                    selectedSetName
                                 )
 
                                 var cContentPanel3Id = cContentPanelId + "Panel3"
 
-                                if ( teamCode == 'Liverpool_For_Team' ) { 
+                                if ( setCode == 'Liverpool_For_Scoring_Team' ) { 
                                     
                                     d3.select("#" + cContentPanel3Id).append("p").text(
                                         "You can pick a scenario from the dropdown below\
@@ -3028,9 +3094,10 @@
                                     dataOriginProbabilitiesFor,
                                     dataOriginProbabilitiesShotFor,
                                     dataOriginProbabilitiesPassFor,
-                                    dataOriginProbabilitiesMoveFor,
+                                    dataOriginProbabilitiesRunFor,
                                     colorScales,
-                                    teamCode
+                                    setCode,
+                                    selectedSetName
                                 )
 
 
@@ -3049,14 +3116,15 @@
     }
 
     createPanelParent(
-        selectedTeamCode,
+        selectedSetCode,
         cContentPanelId
     )
 
     updatePanelParentWithData(
-        selectedTeamCode,
+        selectedSetCode,
         cContentPanelId,
-        cWhatScaleToUse
+        cWhatScaleToUse,
+        selectedSetName
     )
 
 </script>
